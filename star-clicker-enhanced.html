@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⭐ Star Clicker — Galaxy Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --sky: #87CEEB;
+  --sky2: #b0e2ff;
+  --ground: #5DBB63;
+  --ground2: #7DD87F;
+}
+
+body {
+  font-family: 'Fredoka One', 'Arial Rounded MT Bold', sans-serif;
+  background: linear-gradient(180deg, var(--sky) 0%, var(--sky2) 100%);
+  min-height: 100vh;
+  overflow-x: hidden;
+  transition: background 2s;
+}
+
+/* Sky themes by prestige */
+body.prestige1 { --sky:#c084fc; --sky2:#e9d5ff; --ground:#7e22ce; --ground2:#a855f7; }
+body.prestige2 { --sky:#f97316; --sky2:#fed7aa; --ground:#b45309; --ground2:#d97706; }
+body.prestige3 { --sky:#0ea5e9; --sky2:#7dd3fc; --ground:#0369a1; --ground2:#0284c7; }
+body.prestige4 { --sky:#10b981; --sky2:#a7f3d0; --ground:#065f46; --ground2:#059669; }
+body.prestige5 { --sky:#1e1b4b; --sky2:#312e81; --ground:#4c1d95; --ground2:#6d28d9; }
+
+/* Stars twinkling in prestige5 */
+body.prestige5 .star-twinkle { display:block !important; }
+
+.star-twinkle {
+  display: none;
+  position: fixed;
+  border-radius: 50%;
+  background: white;
+  pointer-events: none;
+  z-index: 0;
+  animation: twinkle 2s infinite alternate;
+}
+@keyframes twinkle { from{opacity:0.2;transform:scale(0.8)} to{opacity:1;transform:scale(1.2)} }
+
+/* Clouds */
+.cloud {
+  position: fixed;
+  background: white;
+  border-radius: 50px;
+  opacity: 0.85;
+  animation: drift linear infinite;
+  z-index: 1;
+  pointer-events: none;
+}
+.cloud::before, .cloud::after {
+  content: '';
+  position: absolute;
+  background: white;
+  border-radius: 50%;
+}
+#c1 { width:140px;height:40px;top:8%;animation-duration:32s;animation-delay:-5s; }
+#c1::before { width:70px;height:60px;top:-32px;left:25px; }
+#c1::after  { width:50px;height:48px;top:-26px;left:65px; }
+#c2 { width:100px;height:30px;top:20%;animation-duration:42s;animation-delay:-18s; }
+#c2::before { width:50px;height:44px;top:-22px;left:18px; }
+#c3 { width:170px;height:45px;top:4%;animation-duration:55s;animation-delay:-35s; }
+#c3::before { width:80px;height:65px;top:-36px;left:35px; }
+#c3::after  { width:60px;height:52px;top:-30px;left:85px; }
+#c4 { width:90px;height:28px;top:35%;animation-duration:38s;animation-delay:-10s; }
+#c4::before { width:44px;height:40px;top:-20px;left:14px; }
+#c5 { width:120px;height:35px;top:14%;animation-duration:48s;animation-delay:-22s; }
+#c5::before { width:60px;height:52px;top:-28px;left:20px; }
+#c5::after  { width:45px;height:40px;top:-22px;left:60px; }
+
+@keyframes drift { from { transform: translateX(-250px); } to { transform: translateX(110vw); } }
+
+/* Ground */
+.ground {
+  position: fixed;
+  bottom: 0; left: 0; right: 0;
+  height: 90px;
+  background: var(--ground);
+  border-radius: 50px 50px 0 0;
+  z-index: 1;
+  pointer-events: none;
+  transition: background 2s;
+}
+.ground::before {
+  content: '';
+  position: absolute;
+  top: -24px; left: 0; right: 0;
+  height: 36px;
+  background: var(--ground2);
+  border-radius: 50%;
+  transition: background 2s;
+}
+
+/* ─── Layout ─── */
+.main-layout {
+  position: relative;
+  z-index: 10;
+  display: flex;
+  min-height: 100vh;
+  align-items: flex-start;
+}
+
+.left-panel, .right-panel {
+  width: 230px;
+  min-width: 230px;
+  padding: 12px 10px 110px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.center-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0 120px;
+  gap: 10px;
+}
+
+/* Score box */
+.score-box {
+  background: rgba(255,255,255,0.95);
+  border-radius: 24px;
+  padding: 10px 22px;
+  text-align: center;
+  border: 3px solid #FFD700;
+  box-shadow: 0 5px 0 #E6B800, 0 8px 20px rgba(0,0,0,0.12);
+  min-width: 210px;
+}
+.score-label { font-size: 11px; color: #AAA; letter-spacing: 1px; font-family: 'Nunito', sans-serif; text-transform: uppercase; }
+.score-val { font-size: 36px; color: #FF6B35; line-height: 1.1; }
+.score-sub { font-size: 12px; color: #BBB; font-family: 'Nunito', sans-serif; }
+.score-total { font-size: 11px; color: #CCC; font-family: 'Nunito', sans-serif; }
+
+/* Level badge */
+.level-badge {
+  background: linear-gradient(135deg, #FFD700, #FF6B35);
+  color: white;
+  border-radius: 20px;
+  padding: 5px 16px;
+  font-size: 13px;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+  box-shadow: 0 3px 0 #c05000;
+  text-align: center;
+}
+
+/* Main click button */
+.click-btn {
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+  background: transparent;
+  position: relative;
+  transition: transform 0.08s;
+  user-select: none;
+  filter: drop-shadow(0 8px 20px rgba(255,200,0,0.45));
+}
+.click-btn:active { transform: scale(0.85) rotate(-6deg); }
+.click-btn:hover { filter: drop-shadow(0 12px 28px rgba(255,200,0,0.7)); }
+.star-svg { width: 200px; height: 200px; }
+
+.click-hint {
+  font-size: 14px;
+  color: rgba(255,255,255,0.97);
+  background: rgba(0,0,0,0.2);
+  border-radius: 20px;
+  padding: 5px 18px;
+}
+
+/* Panel titles */
+.panel-title {
+  font-size: 14px;
+  color: rgba(255,255,255,0.97);
+  text-align: center;
+  text-shadow: 1px 2px 0 rgba(0,0,0,0.2);
+  padding: 5px 0;
+  border-bottom: 2px dashed rgba(255,255,255,0.45);
+  margin-bottom: 4px;
+}
+
+/* Tab buttons */
+.tab-bar {
+  display: flex;
+  gap: 4px;
+  width: 100%;
+}
+.tab-btn {
+  flex: 1;
+  background: rgba(255,255,255,0.5);
+  border: none;
+  border-radius: 10px;
+  padding: 5px 2px;
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 11px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.tab-btn.active {
+  background: rgba(255,255,255,0.92);
+  color: #FF6B35;
+}
+.tab-content { display: none; }
+.tab-content.active { display: flex; flex-direction: column; gap: 6px; }
+
+/* Cards */
+.upgrade-card {
+  background: rgba(255,255,255,0.93);
+  border-radius: 14px;
+  padding: 8px 10px;
+  border: 2.5px solid #DDD;
+  cursor: pointer;
+  transition: transform 0.1s, border-color 0.2s, box-shadow 0.2s;
+  position: relative;
+}
+.upgrade-card:hover:not(.locked) {
+  transform: scale(1.03);
+  border-color: #FFD700;
+  box-shadow: 0 4px 12px rgba(255,215,0,0.3);
+}
+.upgrade-card.locked { opacity: 0.4; cursor: not-allowed; }
+.upgrade-card.owned { border-color: #5DBB63; background: rgba(240,255,240,0.95); }
+.upgrade-card.can-afford { border-color: #FFD700; background: rgba(255,253,230,0.97); }
+.upg-top { display: flex; align-items: center; gap: 7px; }
+.upg-icon { font-size: 24px; line-height: 1; }
+.upg-name { font-size: 12px; color: #333; flex: 1; }
+.upg-cost { font-size: 11px; font-weight: bold; color: #FF6B35; }
+.upg-desc { font-size: 10px; color: #999; margin-top: 2px; font-family: 'Nunito', sans-serif; }
+
+/* Achievement cards */
+.ach-card {
+  background: rgba(255,255,255,0.88);
+  border-radius: 12px;
+  padding: 7px 9px;
+  border: 2px solid #DDD;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.ach-card.unlocked { border-color: #FFD700; background: rgba(255,253,215,0.97); }
+.ach-card.locked { opacity: 0.4; }
+.ach-icon { font-size: 22px; }
+.ach-info { flex: 1; }
+.ach-name { font-size: 11px; color: #333; }
+.ach-desc { font-size: 9px; color: #999; font-family: 'Nunito', sans-serif; }
+
+/* Quest cards */
+.quest-card {
+  background: rgba(255,255,255,0.9);
+  border-radius: 14px;
+  padding: 9px 11px;
+  border: 2.5px solid #DDD;
+}
+.quest-card.done { border-color: #5DBB63; background: rgba(240,255,240,0.95); }
+.quest-name { font-size: 12px; color: #333; }
+.quest-desc { font-size: 10px; color: #888; font-family: 'Nunito', sans-serif; margin-top:2px; }
+.quest-bar { height: 6px; background: #EEE; border-radius: 3px; margin-top: 6px; overflow: hidden; }
+.quest-fill { height: 100%; background: linear-gradient(90deg, #FFD700, #FF6B35); border-radius: 3px; transition: width 0.4s; }
+.quest-claim {
+  margin-top: 6px;
+  background: #5DBB63;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  padding: 3px 10px;
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 11px;
+  cursor: pointer;
+}
+.quest-claim:hover { background: #4caf50; }
+
+/* Milestone banner */
+.milestone-banner {
+  position: fixed;
+  top: 20px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(135deg, #FFD700, #FF6B35);
+  color: white;
+  border-radius: 34px;
+  padding: 12px 36px;
+  font-size: 17px;
+  box-shadow: 0 5px 0 #c05000, 0 8px 24px rgba(0,0,0,0.2);
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s;
+  white-space: nowrap;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+}
+
+/* Float text */
+.float-text {
+  position: fixed;
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 22px;
+  color: #FFD700;
+  text-shadow: 1px 1px 0 #B8860B, -1px -1px 0 #B8860B;
+  pointer-events: none;
+  z-index: 9999;
+  animation: floatUp 0.9s ease-out forwards;
+}
+.float-text.bonus { color: #ff6bea; text-shadow: 1px 1px 0 #8b0060, -1px -1px 0 #8b0060; font-size: 26px; }
+@keyframes floatUp {
+  0%   { opacity: 1; transform: translateY(0) scale(1); }
+  100% { opacity: 0; transform: translateY(-100px) scale(0.5); }
+}
+
+/* Shooting star event */
+.shooting-star {
+  position: fixed;
+  font-size: 34px;
+  cursor: pointer;
+  z-index: 9998;
+  animation: shoot 3.5s linear forwards;
+  filter: drop-shadow(0 0 12px gold);
+  user-select: none;
+}
+@keyframes shoot {
+  0%   { opacity:0; transform: translateX(0) translateY(0) rotate(-30deg); }
+  8%   { opacity:1; }
+  90%  { opacity:1; }
+  100% { opacity:0; transform: translateX(70vw) translateY(30vh) rotate(-30deg); }
+}
+
+/* Prestige */
+.prestige-btn {
+  background: linear-gradient(135deg, #a855f7, #7e22ce);
+  border: none;
+  border-radius: 22px;
+  color: white;
+  padding: 10px 20px;
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 14px;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #5b21b6;
+  display: none;
+  transition: transform 0.1s;
+  text-shadow: 1px 1px 0 rgba(0,0,0,0.2);
+}
+.prestige-btn:hover { transform: scale(1.06); }
+.prestige-btn:active { transform: scale(0.96); box-shadow: 0 2px 0 #5b21b6; }
+
+#passive-ticker {
+  font-size: 12px;
+  color: rgba(255,255,255,0.9);
+  text-align: center;
+  font-family: 'Nunito', sans-serif;
+}
+
+/* Sound toggle */
+.sound-btn {
+  background: rgba(255,255,255,0.88);
+  border: 2.5px solid #DDD;
+  border-radius: 20px;
+  padding: 6px 14px;
+  font-family: 'Fredoka One', sans-serif;
+  font-size: 12px;
+  cursor: pointer;
+  color: #555;
+  transition: transform 0.1s, border-color 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.sound-btn:hover { border-color: #FFD700; transform: scale(1.05); }
+.sound-btn.fart-mode { border-color: #8BC34A; background: rgba(220,255,200,0.9); color: #4a7c00; }
+
+/* Bonus event banner */
+.event-banner {
+  position: fixed;
+  bottom: 100px; left: 50%; transform: translateX(-50%);
+  background: linear-gradient(135deg, #ff6bea, #a855f7);
+  color: white;
+  border-radius: 28px;
+  padding: 10px 28px;
+  font-size: 15px;
+  box-shadow: 0 4px 0 #7e22ce;
+  z-index: 9990;
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.35s;
+  white-space: nowrap;
+}
+
+/* Save indicator */
+.save-dot {
+  position: fixed;
+  bottom: 96px; right: 14px;
+  font-size: 10px;
+  color: rgba(255,255,255,0.6);
+  font-family: 'Nunito', sans-serif;
+  z-index: 20;
+}
+
+/* Scrollbar */
+.left-panel::-webkit-scrollbar, .right-panel::-webkit-scrollbar { width: 3px; }
+.left-panel::-webkit-scrollbar-thumb, .right-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.35); border-radius: 2px; }
+
+/* Stats mini */
+.stats-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+.stat-pill {
+  background: rgba(255,255,255,0.82);
+  border-radius: 14px;
+  padding: 3px 10px;
+  font-size: 11px;
+  color: #555;
+  font-family: 'Nunito', sans-serif;
+}
+
+/* Combo display */
+.combo-display {
+  font-size: 13px;
+  color: #fff;
+  background: rgba(255,100,0,0.7);
+  border-radius: 16px;
+  padding: 3px 14px;
+  display: none;
+  animation: comboPulse 0.3s ease;
+}
+@keyframes comboPulse { 0%{transform:scale(1.3)} 100%{transform:scale(1)} }
+
+/* Responsive */
+@media (max-width: 720px) {
+  .left-panel, .right-panel { width: 145px; min-width: 145px; padding: 8px 5px 110px; }
+  .score-val { font-size: 28px; }
+  .click-btn { width: 150px; height: 150px; }
+  .star-svg { width: 150px; height: 150px; }
+}
+</style>
+</head>
+<body>
+
+<!-- Twinkling stars (prestige5) -->
+<div class="star-twinkle" style="width:3px;height:3px;top:10%;left:15%;animation-delay:0s"></div>
+<div class="star-twinkle" style="width:2px;height:2px;top:25%;left:45%;animation-delay:0.7s"></div>
+<div class="star-twinkle" style="width:4px;height:4px;top:5%;left:70%;animation-delay:1.2s"></div>
+<div class="star-twinkle" style="width:2px;height:2px;top:18%;left:82%;animation-delay:0.4s"></div>
+<div class="star-twinkle" style="width:3px;height:3px;top:30%;left:28%;animation-delay:1.8s"></div>
+<div class="star-twinkle" style="width:2px;height:2px;top:8%;left:55%;animation-delay:2.1s"></div>
+
+<div id="c1" class="cloud"></div>
+<div id="c2" class="cloud"></div>
+<div id="c3" class="cloud"></div>
+<div id="c4" class="cloud"></div>
+<div id="c5" class="cloud"></div>
+<div class="ground"></div>
+
+<div class="main-layout">
+
+  <!-- LEFT: Upgrades + Achievements -->
+  <div class="left-panel">
+    <div class="panel-title">✨ Upgrades</div>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchLeftTab('upg',this)">⬆️ Upg</button>
+      <button class="tab-btn" onclick="switchLeftTab('ach',this)">🏆 Ach</button>
+    </div>
+    <div id="tab-upg" class="tab-content active">
+      <div id="upgrades-list"></div>
+    </div>
+    <div id="tab-ach" class="tab-content">
+      <div id="achievements-list"></div>
+    </div>
+  </div>
+
+  <!-- CENTER -->
+  <div class="center-panel">
+    <div class="score-box">
+      <div class="score-label">Stars Collected</div>
+      <div class="score-val" id="score-display">0</div>
+      <div class="score-sub" id="cps-display">0 per sec</div>
+      <div class="score-total" id="total-display">Total: 0</div>
+    </div>
+
+    <div class="level-badge" id="level-badge">⭐ Stargazer</div>
+
+    <div id="passive-ticker">Click the star to collect!</div>
+    <div class="combo-display" id="combo-display">🔥 ×2 COMBO!</div>
+
+    <button class="click-btn" id="main-btn" onclick="doClick(event)" title="Click to collect stars!">
+      <svg class="star-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="sg" cx="50%" cy="42%" r="58%">
+            <stop offset="0%"   stop-color="#FFFDE7"/>
+            <stop offset="55%"  stop-color="#FFD700"/>
+            <stop offset="100%" stop-color="#FFA000"/>
+          </radialGradient>
+          <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#FFD700" stop-opacity="0.35"/>
+            <stop offset="100%" stop-color="#FFD700" stop-opacity="0"/>
+          </radialGradient>
+          <filter id="sparkle">
+            <feGaussianBlur stdDeviation="2" result="blur"/>
+            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+          </filter>
+        </defs>
+        <circle cx="100" cy="100" r="94" fill="url(#glow)"/>
+        <polygon points="100,14 119,70 178,70 130,104 149,160 100,128 51,160 70,104 22,70 81,70"
+          fill="url(#sg)" stroke="#E6A800" stroke-width="3" stroke-linejoin="round"/>
+        <!-- shine -->
+        <polygon points="100,30 114,70 100,60 86,70" fill="rgba(255,255,255,0.38)" stroke="none"/>
+        <ellipse cx="82" cy="82" rx="9" ry="8" fill="rgba(255,255,255,0.55)"/>
+        <ellipse cx="82" cy="82" rx="4" ry="3.5" fill="rgba(255,255,255,0.95)"/>
+        <!-- face -->
+        <circle cx="88" cy="105" r="4" fill="#7B5C00" opacity="0.6"/>
+        <circle cx="112" cy="105" r="4" fill="#7B5C00" opacity="0.6"/>
+        <path d="M88,116 Q100,126 112,116" stroke="#7B5C00" stroke-width="2.5" fill="none" stroke-linecap="round" opacity="0.6"/>
+      </svg>
+    </button>
+
+    <div class="click-hint">+<span id="cpc-label">1</span> ⭐ per click</div>
+
+    <div class="stats-row">
+      <div class="stat-pill" id="total-clicks-pill">0 clicks</div>
+      <div class="stat-pill" id="best-cps-pill">Best: 0/s</div>
+    </div>
+
+    <button class="sound-btn" id="sound-btn" onclick="toggleSound()">
+      <span id="sound-icon">✨</span><span id="sound-label">Sparkle</span>
+    </button>
+
+    <button class="prestige-btn" id="prestige-btn" onclick="doPrestige()">✨ Prestige! (×2 forever)</button>
+    <div style="font-size:12px;color:rgba(255,255,255,0.85);text-align:center" id="prestige-label"></div>
+  </div>
+
+  <!-- RIGHT: Generators + Quests -->
+  <div class="right-panel">
+    <div class="panel-title">🏭 Generators</div>
+    <div class="tab-bar">
+      <button class="tab-btn active" onclick="switchRightTab('gen',this)">🏭 Gen</button>
+      <button class="tab-btn" onclick="switchRightTab('quest',this)">📜 Quest</button>
+    </div>
+    <div id="tab-gen" class="tab-content active">
+      <div id="generators-list"></div>
+    </div>
+    <div id="tab-quest" class="tab-content">
+      <div id="quests-list"></div>
+    </div>
+  </div>
+</div>
+
+<div class="milestone-banner" id="milestone"></div>
+<div class="event-banner" id="event-banner"></div>
+<div class="save-dot" id="save-dot">💾 saved</div>
+
+<script>
+// ═══════════════════════════════════════════
+//  DATA
+// ═══════════════════════════════════════════
+
+const UPGRADES = [
+  // Click power
+  { id:'u1',  name:'Shiny Wand',       icon:'🪄', desc:'+1 click power',        cost:5,         effect:()=>{ S.clickPower+=1; } },
+  { id:'u2',  name:'Gold Gloves',      icon:'🧤', desc:'+3 click power',        cost:50,        effect:()=>{ S.clickPower+=3; } },
+  { id:'u3',  name:'Lucky Charm',      icon:'🍀', desc:'2× all generators',     cost:150,       effect:()=>{ S.genMult*=2; recalcCPS(); } },
+  { id:'u4',  name:'Star Magnet',      icon:'🧲', desc:'+10 click power',       cost:400,       effect:()=>{ S.clickPower+=10; } },
+  { id:'u5',  name:'Turbo Engine',     icon:'⚡', desc:'3× all generators',     cost:1500,      effect:()=>{ S.genMult*=3; recalcCPS(); } },
+  { id:'u6',  name:'Rainbow Boost',    icon:'🌈', desc:'+50 click power',       cost:6000,      effect:()=>{ S.clickPower+=50; } },
+  { id:'u7',  name:'Cosmic Dust',      icon:'🌌', desc:'5× all generators',     cost:40000,     effect:()=>{ S.genMult*=5; recalcCPS(); } },
+  { id:'u8',  name:'Time Warp',        icon:'⏰', desc:'+200 click power',      cost:150000,    effect:()=>{ S.clickPower+=200; } },
+  // More!
+  { id:'u9',  name:'Star Compass',     icon:'🧭', desc:'+500 click power',      cost:800000,    effect:()=>{ S.clickPower+=500; } },
+  { id:'u10', name:'Nebula Core',      icon:'🔮', desc:'10× all generators',    cost:2000000,   effect:()=>{ S.genMult*=10; recalcCPS(); } },
+  { id:'u11', name:'Solar Sail',       icon:'🪐', desc:'+2000 click power',     cost:8000000,   effect:()=>{ S.clickPower+=2000; } },
+  { id:'u12', name:'Quantum Crystal',  icon:'💎', desc:'20× all generators',    cost:30000000,  effect:()=>{ S.genMult*=20; recalcCPS(); } },
+  { id:'u13', name:'Black Hole Tap',   icon:'🌑', desc:'+10000 click power',    cost:100000000, effect:()=>{ S.clickPower+=10000; } },
+  { id:'u14', name:'Dark Matter Lace', icon:'🕳️', desc:'50× all generators',   cost:500000000, effect:()=>{ S.genMult*=50; recalcCPS(); } },
+  { id:'u15', name:'Big Bang Finger',  icon:'💥', desc:'+100000 click power',   cost:2000000000,effect:()=>{ S.clickPower+=100000; } },
+  // Passive synergies
+  { id:'u16', name:'Star Fairy Wand',  icon:'🧚‍♀️', desc:'Fairies give ×3 more', cost:200,      effect:()=>{ boostGen('g1',3); } },
+  { id:'u17', name:'Rainbow Tadpole',  icon:'🐸', desc:'Frogs give ×3 more',    cost:1200,      effect:()=>{ boostGen('g2',3); } },
+  { id:'u18', name:'Cloud Hopper',     icon:'🐰', desc:'Bunnies give ×3 more',  cost:5000,      effect:()=>{ boostGen('g3',3); } },
+  { id:'u19', name:'Dragon Scale',     icon:'🐲', desc:'Dragons give ×3 more',  cost:20000,     effect:()=>{ boostGen('g4',3); } },
+  { id:'u20', name:'Bamboo Aura',      icon:'🐼', desc:'Pandas give ×3 more',   cost:90000,     effect:()=>{ boostGen('g5',3); } },
+  { id:'u21', name:'Unicorn Horn',     icon:'🦄', desc:'Unicorns give ×3 more', cost:350000,    effect:()=>{ boostGen('g6',3); } },
+  { id:'u22', name:'Factory Overhaul', icon:'⚙️', desc:'Factories give ×3 more',cost:2000000,   effect:()=>{ boostGen('g7',3); } },
+  { id:'u23', name:'Whale Song',       icon:'🎵', desc:'Whales give ×3 more',   cost:10000000,  effect:()=>{ boostGen('g8',3); } },
+  { id:'u24', name:'Phoenix Feather',  icon:'🔥', desc:'Phoenixes give ×3 more',cost:60000000,  effect:()=>{ boostGen('g9',3); } },
+  { id:'u25', name:'God Ray',          icon:'☀️', desc:'Sunbeams give ×3 more', cost:500000000, effect:()=>{ boostGen('g10',3); } },
+];
+
+const GENERATORS = [
+  { id:'g1',  name:'Star Fairy',      icon:'🧚', baseCPS:0.5,      baseCost:10,         genBoost:1 },
+  { id:'g2',  name:'Rainbow Frog',    icon:'🐸', baseCPS:3,        baseCost:75,         genBoost:1 },
+  { id:'g3',  name:'Cloud Bunny',     icon:'🐰', baseCPS:10,       baseCost:300,        genBoost:1 },
+  { id:'g4',  name:'Candy Dragon',    icon:'🐲', baseCPS:35,       baseCost:1200,       genBoost:1 },
+  { id:'g5',  name:'Moon Panda',      icon:'🐼', baseCPS:120,      baseCost:5000,       genBoost:1 },
+  { id:'g6',  name:'Galaxy Unicorn',  icon:'🦄', baseCPS:400,      baseCost:20000,      genBoost:1 },
+  { id:'g7',  name:'Star Factory',    icon:'🏭', baseCPS:1500,     baseCost:100000,     genBoost:1 },
+  { id:'g8',  name:'Cosmic Whale',    icon:'🐳', baseCPS:6000,     baseCost:500000,     genBoost:1 },
+  { id:'g9',  name:'Star Phoenix',    icon:'🦅', baseCPS:25000,    baseCost:2500000,    genBoost:1 },
+  { id:'g10', name:'Solar Sunbeam',   icon:'☀️', baseCPS:100000,   baseCost:12000000,   genBoost:1 },
+  { id:'g11', name:'Pulsar Station',  icon:'📡', baseCPS:400000,   baseCost:80000000,   genBoost:1 },
+  { id:'g12', name:'Wormhole Hub',    icon:'🌀', baseCPS:1600000,  baseCost:500000000,  genBoost:1 },
+  { id:'g13', name:'God of Stars',    icon:'👑', baseCPS:10000000, baseCost:3000000000, genBoost:1 },
+];
+
+const ACHIEVEMENTS = [
+  { id:'a1',  icon:'⭐', name:'First Star',         desc:'Collect your first star',               check: ()=> S.totalEarned >= 1 },
+  { id:'a2',  icon:'🌟', name:'Star Sprout',        desc:'Collect 1,000 stars',                   check: ()=> S.totalEarned >= 1000 },
+  { id:'a3',  icon:'🌠', name:'Meteor Shower',      desc:'Collect 100K stars',                    check: ()=> S.totalEarned >= 100000 },
+  { id:'a4',  icon:'🌌', name:'Galactic Mind',      desc:'Collect 1M stars',                      check: ()=> S.totalEarned >= 1000000 },
+  { id:'a5',  icon:'🏆', name:'Star Billionaire',   desc:'Collect 1 Billion stars',               check: ()=> S.totalEarned >= 1e9 },
+  { id:'a6',  icon:'💎', name:'Trillionaire',       desc:'Collect 1 Trillion stars',              check: ()=> S.totalEarned >= 1e12 },
+  { id:'a7',  icon:'🖱️', name:'Click Rookie',       desc:'Click 100 times',                       check: ()=> S.totalClicks >= 100 },
+  { id:'a8',  icon:'👆', name:'Click Warrior',      desc:'Click 1,000 times',                     check: ()=> S.totalClicks >= 1000 },
+  { id:'a9',  icon:'⚡', name:'Speed Clicker',      desc:'Click 10,000 times',                    check: ()=> S.totalClicks >= 10000 },
+  { id:'a10', icon:'🏭', name:'First Generator',    desc:'Buy your first generator',              check: ()=> Object.values(S.generators).some(v=>v>0) },
+  { id:'a11', icon:'🏗️', name:'Factory Boss',       desc:'Own 50 generators total',              check: ()=> Object.values(S.generators).reduce((a,b)=>a+b,0) >= 50 },
+  { id:'a12', icon:'🌆', name:'Mega Corp',          desc:'Own 200 generators total',              check: ()=> Object.values(S.generators).reduce((a,b)=>a+b,0) >= 200 },
+  { id:'a13', icon:'✨', name:'Upgrade Hoarder',    desc:'Buy 5 upgrades',                        check: ()=> Object.keys(S.upgrades).length >= 5 },
+  { id:'a14', icon:'🧙', name:'Master Upgrader',   desc:'Buy 15 upgrades',                       check: ()=> Object.keys(S.upgrades).length >= 15 },
+  { id:'a15', icon:'♾️', name:'All Upgrades',       desc:'Buy all upgrades',                      check: ()=> Object.keys(S.upgrades).length >= UPGRADES.length },
+  { id:'a16', icon:'🌙', name:'First Prestige',     desc:'Prestige for the first time',           check: ()=> S.prestigeCount >= 1 },
+  { id:'a17', icon:'🪐', name:'Galaxy Veteran',     desc:'Prestige 5 times',                      check: ()=> S.prestigeCount >= 5 },
+  { id:'a18', icon:'💨', name:'Fart Enthusiast',    desc:'Enable fart mode',                      check: ()=> S.usedFartMode },
+  { id:'a19', icon:'🌠', name:'Shooting Star',      desc:'Catch a shooting star',                 check: ()=> S.shootingStarsCaught >= 1 },
+  { id:'a20', icon:'🎯', name:'Star Hunter',        desc:'Catch 10 shooting stars',               check: ()=> S.shootingStarsCaught >= 10 },
+  { id:'a21', icon:'📜', name:'Quest Beginner',     desc:'Complete your first quest',             check: ()=> S.questsDone >= 1 },
+  { id:'a22', icon:'🗓️', name:'Quest Master',       desc:'Complete 10 quests',                    check: ()=> S.questsDone >= 10 },
+  { id:'a23', icon:'🔥', name:'On Fire',            desc:'Reach a ×5 click combo',                check: ()=> S.maxCombo >= 5 },
+  { id:'a24', icon:'🌊', name:'CPS Surfer',         desc:'Reach 1,000 stars/sec',                 check: ()=> S.cps >= 1000 },
+  { id:'a25', icon:'🚀', name:'To The Moon',        desc:'Reach 1,000,000 stars/sec',             check: ()=> S.cps >= 1000000 },
+];
+
+const QUESTS_POOL = [
+  { id:'q_click100',  name:'Clicking Spree',    desc:'Click 100 times',          reward:500,    type:'clicks',   target:100  },
+  { id:'q_click500',  name:'Click Marathon',    desc:'Click 500 times',          reward:3000,   type:'clicks',   target:500  },
+  { id:'q_earn10k',   name:'Star Collector',    desc:'Earn 10,000 stars',        reward:5000,   type:'earn',     target:10000 },
+  { id:'q_earn100k',  name:'Star Hoarder',      desc:'Earn 100,000 stars',       reward:50000,  type:'earn',     target:100000 },
+  { id:'q_gen10',     name:'Generator Fan',     desc:'Buy 10 generators',        reward:2000,   type:'gencount', target:10   },
+  { id:'q_gen30',     name:'Generator Tycoon',  desc:'Buy 30 generators',        reward:20000,  type:'gencount', target:30   },
+  { id:'q_upg3',      name:'Upgrade Lover',     desc:'Buy 3 upgrades',           reward:1000,   type:'upgcount', target:3    },
+  { id:'q_upg8',      name:'Power Seeker',      desc:'Buy 8 upgrades',           reward:15000,  type:'upgcount', target:8    },
+  { id:'q_shoot2',    name:'Star Gazer',        desc:'Catch 2 shooting stars',   reward:8000,   type:'shoot',    target:2    },
+  { id:'q_cps100',    name:'Passive Income',    desc:'Reach 100 stars/sec',      reward:10000,  type:'cps',      target:100  },
+];
+
+// ═══════════════════════════════════════════
+//  STATE
+// ═══════════════════════════════════════════
+
+const DEFAULT_STATE = {
+  stars: 0,
+  totalEarned: 0,
+  passiveBucket: 0,
+  clickPower: 1,
+  genMult: 1,
+  cps: 0,
+  prestigeCount: 0,
+  prestigeMult: 1,
+  upgrades: {},
+  generators: {},
+  genBoosts: {},
+  totalClicks: 0,
+  shootingStarsCaught: 0,
+  questsDone: 0,
+  usedFartMode: false,
+  activeQuests: [],
+  questProgress: {},
+  bestCPS: 0,
+  maxCombo: 0,
+};
+
+let S = loadState();
+const shownMilestones = new Set();
+const shownAchievements = new Set();
+
+function loadState() {
+  try {
+    const saved = localStorage.getItem('starclicker_v2');
+    if (saved) {
+      const parsed = JSON.parse(saved);
+      return Object.assign({}, DEFAULT_STATE, parsed);
+    }
+  } catch(e) {}
+  return Object.assign({}, DEFAULT_STATE);
+}
+
+function saveState() {
+  try {
+    localStorage.setItem('starclicker_v2', JSON.stringify(S));
+    const dot = document.getElementById('save-dot');
+    dot.textContent = '💾 saved';
+    setTimeout(()=>{ dot.textContent = ''; }, 1500);
+  } catch(e) {}
+}
+
+setInterval(saveState, 10000);
+
+// ═══════════════════════════════════════════
+//  SOUND
+// ═══════════════════════════════════════════
+
+let audioCtx = null;
+let fartMode = false;
+
+function getCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (audioCtx.state === 'suspended') audioCtx.resume();
+  return audioCtx;
+}
+
+function playSparkle(pitch) {
+  try {
+    const ctx = getCtx();
+    const t = ctx.currentTime;
+    const freqs = [1047,1175,1319,1568,1760,2093,2349];
+    const f = (pitch || freqs[Math.floor(Math.random()*freqs.length)]);
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(f, t);
+    osc.frequency.exponentialRampToValueAtTime(f * 1.7, t + 0.18);
+    gain.gain.setValueAtTime(0.2, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.28);
+    osc.start(t); osc.stop(t + 0.28);
+  } catch(e) {}
+}
+
+function playAchSound() {
+  try {
+    const ctx = getCtx();
+    const t = ctx.currentTime;
+    [523, 659, 784, 1047].forEach((f, i) => {
+      const osc = ctx.createOscillator();
+      const g = ctx.createGain();
+      osc.connect(g); g.connect(ctx.destination);
+      osc.type = 'sine';
+      osc.frequency.value = f;
+      g.gain.setValueAtTime(0.15, t + i*0.1);
+      g.gain.exponentialRampToValueAtTime(0.001, t + i*0.1 + 0.25);
+      osc.start(t + i*0.1); osc.stop(t + i*0.1 + 0.3);
+    });
+  } catch(e) {}
+}
+
+// (Fart base64 kept from original)
+const FART_B64 = "//PkZAAefgsGFj3sCp6DWfQASYp4I9VgChoePzcQ0NWl2BuOiITwNQLghFX7IuzTfCQiXwOiQYExzkggGh25Q4POvp2TzxYYLDgkHjBgDcnr35Oz9eJYiHizkgNDS9L3XtGC0lk8nqCuJZ/AYCQeUJYlk8/fvaiQtnEWEgRDAwcYJBMZP0hg5CTHNvjDg9junfvfEMS3nGBwAIen97BIOkksnmZ/JXJ6QG5PudiWT/1e5QqCQ62SxLEsREolxwn52T3+w4UEsnmYJj+Z3O169fixYdn6QmdASCZzEQhiPHRgkExef522JCkzRL0ImVvMzMyxCIYlmZmWLzjjdi+I/UlkJx/KhMcPHggSRIydRUVisMMeIh7a2jHYxCL/7ECDpwQIIPpAIkAIQQOBwhP/xAUV9SKc5znc7L6E/9CKc5zziiuHBwmAYH3uEAAHHf///oRsguhKiY8QFHO/EBwmBBQhCEZA4Bw+LiApIS3/qd9JGV1D7ybP6gwD6wOysHy4Ph8oIUfnugp7KgigFLlHMibAgcUxQxVmMqfMspiC7QbOCny8DRywOp0mMxoxBUx1Bgw0hZtgBZ6EHCkBbgEJBDNHoM4FqVZWEbE12GrLIQstR7W2GoIoNWPYNWD0Hp49";
+
+function playFart() {
+  try {
+    const ctx = getCtx();
+    const bin = atob(FART_B64);
+    const buf = new Uint8Array(bin.length);
+    for (let i=0;i<bin.length;i++) buf[i]=bin.charCodeAt(i);
+    ctx.decodeAudioData(buf.buffer, decoded => {
+      const src = ctx.createBufferSource();
+      src.buffer = decoded;
+      const g = ctx.createGain(); g.gain.value = 0.8;
+      src.connect(g); g.connect(ctx.destination);
+      src.start(0);
+    });
+  } catch(e) {}
+}
+
+function playClickSound() { fartMode ? playFart() : playSparkle(); }
+
+function toggleSound() {
+  fartMode = !fartMode;
+  if (fartMode) S.usedFartMode = true;
+  document.getElementById('sound-icon').textContent = fartMode ? '💨' : '✨';
+  document.getElementById('sound-label').textContent = fartMode ? 'Fart💨' : 'Sparkle';
+  document.getElementById('sound-btn').classList.toggle('fart-mode', fartMode);
+  playClickSound();
+}
+
+// ═══════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════
+
+function fmt(n) {
+  if (n >= 1e15) return (n/1e15).toFixed(2)+'Qa';
+  if (n >= 1e12) return (n/1e12).toFixed(2)+'T';
+  if (n >= 1e9)  return (n/1e9).toFixed(2)+'B';
+  if (n >= 1e6)  return (n/1e6).toFixed(2)+'M';
+  if (n >= 1e3)  return (n/1e3).toFixed(1)+'K';
+  return Math.floor(n).toString();
+}
+
+function fmtCPS(n) {
+  if (n >= 1e9)  return (n/1e9).toFixed(2)+'B';
+  if (n >= 1e6)  return (n/1e6).toFixed(2)+'M';
+  if (n >= 1e3)  return (n/1e3).toFixed(1)+'K';
+  if (n >= 10)   return Math.floor(n).toString();
+  return n.toFixed(1);
+}
+
+function boostGen(id, mult) {
+  S.genBoosts[id] = (S.genBoosts[id] || 1) * mult;
+  recalcCPS();
+}
+
+function genCost(gen) {
+  return Math.ceil(gen.baseCost * Math.pow(1.15, S.generators[gen.id] || 0));
+}
+
+function genCPS(gen) {
+  return gen.baseCPS * (S.genBoosts[gen.id] || 1) * S.genMult * S.prestigeMult;
+}
+
+function recalcCPS() {
+  S.cps = GENERATORS.reduce((acc, g) =>
+    acc + (S.generators[g.id]||0) * genCPS(g), 0);
+  if (S.cps > S.bestCPS) S.bestCPS = S.cps;
+}
+
+// ─── LEVELS ───
+const LEVELS = [
+  [0,         '⭐ Stargazer'],
+  [1000,      '🌟 Star Catcher'],
+  [10000,     '🌠 Meteor Rider'],
+  [100000,    '🌙 Moon Dancer'],
+  [1000000,   '☀️ Solar Pilot'],
+  [10000000,  '🪐 Planet Hopper'],
+  [100000000, '🌌 Galaxy Surfer'],
+  [1e9,       '🚀 Cosmic Admiral'],
+  [1e11,      '💫 Universe Master'],
+  [1e13,      '👑 Star God'],
+];
+
+function getLevel() {
+  let lvl = LEVELS[0];
+  for (const [req, title] of LEVELS) {
+    if (S.totalEarned >= req) lvl = [req, title];
+  }
+  return lvl;
+}
+
+// ─── COMBO ───
+let lastClickTime = 0;
+let comboCount = 0;
+let comboTimeout = null;
+
+function updateCombo() {
+  const now = Date.now();
+  if (now - lastClickTime < 600) {
+    comboCount++;
+    if (comboCount > S.maxCombo) S.maxCombo = comboCount;
+  } else {
+    comboCount = 1;
+  }
+  lastClickTime = now;
+
+  const el = document.getElementById('combo-display');
+  if (comboCount >= 3) {
+    el.style.display = 'block';
+    el.textContent = `🔥 ×${comboCount} COMBO!`;
+    el.style.animation = 'none';
+    void el.offsetWidth;
+    el.style.animation = 'comboPulse 0.3s ease';
+  } else {
+    el.style.display = 'none';
+  }
+  clearTimeout(comboTimeout);
+  comboTimeout = setTimeout(() => {
+    comboCount = 0;
+    el.style.display = 'none';
+  }, 1500);
+
+  return comboCount >= 3 ? comboCount : 1;
+}
+
+// ─── CLICK ───
+function doClick(e) {
+  const combo = updateCombo();
+  const base = Math.floor(S.clickPower * S.prestigeMult);
+  const gain = combo >= 3 ? Math.floor(base * (1 + combo * 0.1)) : base;
+  S.stars = Math.floor(S.stars) + gain;
+  S.totalEarned += gain;
+  S.totalClicks++;
+  playClickSound();
+  spawnFloat(e.clientX, e.clientY, '+' + fmt(gain), combo >= 5 ? 'bonus' : '');
+  updateUI();
+  checkMilestones();
+  checkAchievements();
+  updateQuestProgress();
+  updateStarPulse();
+}
+
+function spawnFloat(x, y, text, cls) {
+  const el = document.createElement('div');
+  el.className = 'float-text' + (cls ? ' '+cls : '');
+  el.textContent = text;
+  el.style.left = (x - 15 + (Math.random()*30-15)) + 'px';
+  el.style.top  = (y - 10) + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 950);
+}
+
+// ─── Star pulse ───
+let pulseTimeout = null;
+function updateStarPulse() {
+  const btn = document.getElementById('main-btn');
+  btn.style.filter = 'drop-shadow(0 0 30px gold) drop-shadow(0 0 60px yellow)';
+  clearTimeout(pulseTimeout);
+  pulseTimeout = setTimeout(() => {
+    btn.style.filter = '';
+  }, 200);
+}
+
+// ─── MILESTONES ───
+const MILESTONES = [
+  [100,        '🌟 100 Stars! Great start!'],
+  [1000,       '🎉 1K Stars! Keep it up!'],
+  [10000,      '🚀 10K Stars! On fire!'],
+  [100000,     '💫 100K Stars! Star tycoon!'],
+  [1000000,    '🌌 1M Stars! Legendary!'],
+  [10000000,   '☀️ 10M! Solar Superstar!'],
+  [100000000,  '🪐 100M! Planet-sized power!'],
+  [1000000000, '🏆 1 BILLION! Unstoppable!'],
+  [1e12,       '💎 1 TRILLION! Beyond mortal!'],
+  [1e15,       '👑 1 QUADRILLION! You are a god!'],
+];
+
+function checkMilestones() {
+  for (const [n, msg] of MILESTONES) {
+    if (S.totalEarned >= n && !shownMilestones.has(n)) {
+      shownMilestones.add(n);
+      showBanner(msg);
+    }
+  }
+}
+
+function showBanner(msg, duration) {
+  const b = document.getElementById('milestone');
+  b.textContent = msg;
+  b.style.opacity = '1';
+  setTimeout(() => b.style.opacity = '0', duration || 3000);
+}
+
+// ─── ACHIEVEMENTS ───
+function checkAchievements() {
+  for (const ach of ACHIEVEMENTS) {
+    if (!shownAchievements.has(ach.id) && !S.upgrades['ach_'+ach.id] && ach.check()) {
+      shownAchievements.add(ach.id);
+      S.upgrades['ach_'+ach.id] = true;
+      showAchievementToast(ach);
+      playAchSound();
+      patchAchievements();
+    }
+  }
+}
+
+function showAchievementToast(ach) {
+  const toast = document.createElement('div');
+  toast.style.cssText = `position:fixed;top:70px;left:50%;transform:translateX(-50%);
+    background:linear-gradient(135deg,#FFD700,#ff9500);color:white;border-radius:24px;
+    padding:10px 28px;font-size:15px;z-index:9998;pointer-events:none;
+    box-shadow:0 4px 0 #c06000,0 6px 20px rgba(0,0,0,0.2);
+    text-shadow:1px 1px 0 rgba(0,0,0,0.2);white-space:nowrap;
+    animation:floatUp 3s ease-out forwards;`;
+  toast.textContent = ach.icon + ' Achievement: ' + ach.name + '!';
+  document.body.appendChild(toast);
+  setTimeout(() => toast.remove(), 3000);
+}
+
+// ─── BUY UPGRADE ───
+function buyUpgrade(id) {
+  const upg = UPGRADES.find(u => u.id === id);
+  if (!upg || S.upgrades[id]) return;
+  S.stars = Math.floor(S.stars);
+  if (S.stars < upg.cost) return;
+  S.stars -= upg.cost;
+  S.upgrades[id] = true;
+  upg.effect();
+  showBanner('⬆️ ' + upg.name + ' purchased!', 2000);
+  updateUI();
+  checkAchievements();
+  updateQuestProgress();
+}
+
+// ─── BUY GENERATOR ───
+function buyGenerator(id) {
+  const gen = GENERATORS.find(g => g.id === id);
+  if (!gen) return;
+  const cost = genCost(gen);
+  S.stars = Math.floor(S.stars);
+  if (S.stars < cost) return;
+  S.stars -= cost;
+  S.generators[id] = (S.generators[id] || 0) + 1;
+  recalcCPS();
+  updateUI();
+  checkAchievements();
+  updateQuestProgress();
+}
+
+// ─── PRESTIGE ───
+function doPrestige() {
+  if (S.totalEarned < 1e6) return;
+  const msg = `Prestige #${S.prestigeCount+1}?\n\n` +
+    `You lose ALL stars, generators and upgrades.\n` +
+    `But you gain a permanent ×2 multiplier!\n\n` +
+    `Current multiplier: ×${S.prestigeMult} → ×${S.prestigeMult*2}`;
+  if (!confirm(msg)) return;
+  S.prestigeCount++;
+  S.prestigeMult = Math.pow(2, S.prestigeCount);
+  S.stars = 0; S.totalEarned = 0; S.passiveBucket = 0;
+  S.clickPower = 1; S.genMult = 1; S.cps = 0;
+  S.upgrades = {}; S.generators = {}; S.genBoosts = {};
+  shownMilestones.clear();
+  applyPrestigeTheme();
+  showBanner('✨ Prestige ' + S.prestigeCount + '! ×' + S.prestigeMult + ' forever!', 4000);
+  updateUI();
+  checkAchievements();
+}
+
+function applyPrestigeTheme() {
+  const body = document.body;
+  body.className = '';
+  if (S.prestigeCount >= 5) body.classList.add('prestige5');
+  else if (S.prestigeCount >= 4) body.classList.add('prestige4');
+  else if (S.prestigeCount >= 3) body.classList.add('prestige3');
+  else if (S.prestigeCount >= 2) body.classList.add('prestige2');
+  else if (S.prestigeCount >= 1) body.classList.add('prestige1');
+}
+
+// ─── QUESTS ───
+function initQuests() {
+  if (S.activeQuests.length === 0) {
+    // Pick 3 random quests
+    const shuffled = [...QUESTS_POOL].sort(() => Math.random()-0.5);
+    S.activeQuests = shuffled.slice(0,3).map(q => ({...q, claimed: false}));
+  }
+}
+
+function getQuestProgress(quest) {
+  switch(quest.type) {
+    case 'clicks':   return Math.min(S.totalClicks, quest.target);
+    case 'earn':     return Math.min(S.totalEarned, quest.target);
+    case 'gencount': return Math.min(Object.values(S.generators).reduce((a,b)=>a+b,0), quest.target);
+    case 'upgcount': return Math.min(Object.keys(S.upgrades).filter(k=>!k.startsWith('ach_')).length, quest.target);
+    case 'shoot':    return Math.min(S.shootingStarsCaught, quest.target);
+    case 'cps':      return Math.min(S.cps, quest.target);
+    default: return 0;
+  }
+}
+
+function claimQuest(idx) {
+  const quest = S.activeQuests[idx];
+  if (!quest || quest.claimed) return;
+  const prog = getQuestProgress(quest);
+  if (prog < quest.target) return;
+  quest.claimed = true;
+  S.stars += quest.reward;
+  S.totalEarned += quest.reward;
+  S.questsDone++;
+  spawnFloat(window.innerWidth/2, window.innerHeight/2, '+' + fmt(quest.reward) + ' 📜', 'bonus');
+  showBanner('📜 Quest done! +' + fmt(quest.reward) + ' ⭐', 3000);
+  updateUI();
+  checkAchievements();
+  // Replace with new quest
+  setTimeout(() => {
+    const usedIds = S.activeQuests.map(q=>q.id);
+    const avail = QUESTS_POOL.filter(q => !usedIds.includes(q.id));
+    if (avail.length > 0) {
+      const pick = avail[Math.floor(Math.random()*avail.length)];
+      S.activeQuests[idx] = {...pick, claimed: false};
+    }
+    patchQuests();
+  }, 500);
+  patchQuests();
+}
+
+function updateQuestProgress() {
+  patchQuests();
+}
+
+// ─── SHOOTING STARS ───
+let shootingStarActive = false;
+function spawnShootingStar() {
+  if (shootingStarActive) return;
+  shootingStarActive = true;
+  const el = document.createElement('div');
+  el.className = 'shooting-star';
+  el.textContent = '🌟';
+  el.style.top = (5 + Math.random()*30) + 'vh';
+  el.style.left = (5 + Math.random()*20) + 'vw';
+  const bonus = Math.floor((S.clickPower + S.cps) * 10 * S.prestigeMult + 100);
+  el.title = 'Click me!';
+  el.addEventListener('click', () => {
+    S.stars += bonus;
+    S.totalEarned += bonus;
+    S.shootingStarsCaught++;
+    spawnFloat(
+      el.getBoundingClientRect().left,
+      el.getBoundingClientRect().top,
+      '🌟 +' + fmt(bonus) + '!',
+      'bonus'
+    );
+    playSparkle(2093);
+    el.remove();
+    shootingStarActive = false;
+    showEventBanner('⭐ You caught a shooting star! +' + fmt(bonus));
+    updateUI();
+    checkAchievements();
+    updateQuestProgress();
+  });
+  document.body.appendChild(el);
+  setTimeout(() => {
+    el.remove();
+    shootingStarActive = false;
+  }, 3500);
+}
+
+// Random events
+function randomEvent() {
+  const roll = Math.random();
+  if (roll < 0.35) {
+    spawnShootingStar();
+  } else if (roll < 0.55 && S.cps > 0) {
+    // Star Rush: 5x CPS for 10s
+    const old = S.genMult;
+    S.genMult *= 5;
+    recalcCPS();
+    updateUI();
+    showEventBanner('⚡ STAR RUSH! 5× stars/sec for 10 seconds!');
+    setTimeout(() => {
+      S.genMult = old;
+      recalcCPS();
+      updateUI();
+    }, 10000);
+  } else if (roll < 0.7) {
+    // Lucky click bonus
+    const bonus = Math.floor(S.clickPower * 50 * S.prestigeMult + 500);
+    S.stars += bonus;
+    S.totalEarned += bonus;
+    spawnFloat(window.innerWidth/2, window.innerHeight/3, '🍀 +' + fmt(bonus), 'bonus');
+    showEventBanner('🍀 Lucky Clover found! +' + fmt(bonus) + ' stars!');
+    updateUI();
+  }
+}
+
+function showEventBanner(msg) {
+  const b = document.getElementById('event-banner');
+  b.textContent = msg;
+  b.style.opacity = '1';
+  setTimeout(() => b.style.opacity = '0', 4000);
+}
+
+// Schedule random events
+function scheduleEvent() {
+  const delay = 20000 + Math.random() * 40000; // 20-60s
+  setTimeout(() => {
+    randomEvent();
+    scheduleEvent();
+  }, delay);
+}
+scheduleEvent();
+
+// ─── UI UPDATE ───
+function updateUI() {
+  document.getElementById('score-display').textContent = fmt(S.stars);
+  document.getElementById('cps-display').textContent = fmtCPS(S.cps) + '/sec';
+  document.getElementById('total-display').textContent = 'Total: ' + fmt(S.totalEarned);
+  document.getElementById('cpc-label').textContent = fmt(Math.floor(S.clickPower * S.prestigeMult));
+  document.getElementById('passive-ticker').textContent = S.cps > 0
+    ? '🌀 Auto: ' + fmtCPS(S.cps) + '/sec'
+    : '👆 Click the star!';
+  document.getElementById('total-clicks-pill').textContent = fmt(S.totalClicks) + ' clicks';
+  document.getElementById('best-cps-pill').textContent = 'Best: ' + fmtCPS(S.bestCPS) + '/s';
+
+  const [, lvlTitle] = getLevel();
+  document.getElementById('level-badge').textContent = lvlTitle;
+
+  document.getElementById('prestige-btn').style.display =
+    S.totalEarned >= 1000000 ? 'block' : 'none';
+  document.getElementById('prestige-label').textContent = S.prestigeCount > 0
+    ? '✨ Prestige ×' + S.prestigeCount + ' — ×' + S.prestigeMult + ' power' : '';
+
+  patchUpgrades();
+  patchGenerators();
+  patchAchievements();
+  patchQuests();
+}
+
+// ─── PATCH UPGRADES ───
+function patchUpgrades() {
+  const container = document.getElementById('upgrades-list');
+  const stars = Math.floor(S.stars);
+  UPGRADES.forEach(upg => {
+    let card = document.getElementById('card-upg-' + upg.id);
+    if (!card) {
+      card = document.createElement('div');
+      card.id = 'card-upg-' + upg.id;
+      card.className = 'upgrade-card';
+      card.innerHTML =
+        '<div class="upg-top">' +
+          '<span class="upg-icon">' + upg.icon + '</span>' +
+          '<span class="upg-name">' + upg.name + '</span>' +
+          '<span class="upg-cost" id="cost-upg-' + upg.id + '"></span>' +
+        '</div>' +
+        '<div class="upg-desc">' + upg.desc + '</div>';
+      card.addEventListener('click', () => buyUpgrade(upg.id));
+      container.appendChild(card);
+    }
+    const owned = !!S.upgrades[upg.id];
+    const canAfford = stars >= upg.cost;
+    card.className = 'upgrade-card' +
+      (owned ? ' owned' : canAfford ? ' can-afford' : ' locked');
+    document.getElementById('cost-upg-' + upg.id).textContent =
+      owned ? '✓' : fmt(upg.cost) + '⭐';
+  });
+}
+
+// ─── PATCH GENERATORS ───
+function patchGenerators() {
+  const container = document.getElementById('generators-list');
+  const stars = Math.floor(S.stars);
+  GENERATORS.forEach(gen => {
+    let card = document.getElementById('card-gen-' + gen.id);
+    if (!card) {
+      card = document.createElement('div');
+      card.id = 'card-gen-' + gen.id;
+      card.className = 'upgrade-card';
+      card.innerHTML =
+        '<div class="upg-top">' +
+          '<span class="upg-icon">' + gen.icon + '</span>' +
+          '<span class="upg-name">' + gen.name + '</span>' +
+          '<span class="upg-cost" id="cost-gen-' + gen.id + '"></span>' +
+        '</div>' +
+        '<div class="upg-desc" id="desc-gen-' + gen.id + '"></div>' +
+        '<div id="owned-gen-' + gen.id + '" style="font-size:10px;color:#5DBB63;font-family:Nunito,sans-serif;"></div>';
+      card.addEventListener('click', () => buyGenerator(gen.id));
+      container.appendChild(card);
+    }
+    const owned = S.generators[gen.id] || 0;
+    const cost = genCost(gen);
+    const canAfford = stars >= cost;
+    card.className = 'upgrade-card' +
+      (owned > 0 ? (canAfford ? ' can-afford' : '') : canAfford ? ' can-afford' : ' locked');
+    if (owned > 0) card.style.borderColor = '#5DBB63';
+    else card.style.borderColor = '';
+    document.getElementById('cost-gen-' + gen.id).textContent = fmt(cost) + '⭐';
+    document.getElementById('desc-gen-' + gen.id).textContent =
+      fmtCPS(genCPS(gen)) + '/sec each';
+    document.getElementById('owned-gen-' + gen.id).textContent =
+      owned ? 'Owned: ' + owned + ' → ' + fmtCPS(genCPS(gen)*owned) + '/s total' : '';
+  });
+}
+
+// ─── PATCH ACHIEVEMENTS ───
+function patchAchievements() {
+  const container = document.getElementById('achievements-list');
+  ACHIEVEMENTS.forEach(ach => {
+    let card = document.getElementById('card-ach-' + ach.id);
+    if (!card) {
+      card = document.createElement('div');
+      card.id = 'card-ach-' + ach.id;
+      card.className = 'ach-card';
+      card.innerHTML =
+        '<span class="ach-icon">' + ach.icon + '</span>' +
+        '<div class="ach-info">' +
+          '<div class="ach-name">' + ach.name + '</div>' +
+          '<div class="ach-desc">' + ach.desc + '</div>' +
+        '</div>';
+      container.appendChild(card);
+    }
+    const unlocked = !!S.upgrades['ach_'+ach.id] || ach.check();
+    card.className = 'ach-card' + (unlocked ? ' unlocked' : ' locked');
+  });
+}
+
+// ─── PATCH QUESTS ───
+function patchQuests() {
+  const container = document.getElementById('quests-list');
+  if (!container) return;
+  container.innerHTML = '';
+  S.activeQuests.forEach((quest, idx) => {
+    const prog = getQuestProgress(quest);
+    const pct = Math.min(100, Math.floor(prog / quest.target * 100));
+    const done = prog >= quest.target;
+    const div = document.createElement('div');
+    div.className = 'quest-card' + (quest.claimed ? ' done' : '');
+    div.innerHTML =
+      '<div class="quest-name">' + quest.name + '</div>' +
+      '<div class="quest-desc">' + quest.desc + ' — Reward: ' + fmt(quest.reward) + '⭐</div>' +
+      '<div class="quest-bar"><div class="quest-fill" style="width:' + pct + '%"></div></div>' +
+      '<div style="font-size:10px;color:#aaa;font-family:Nunito,sans-serif;margin-top:3px">' +
+        fmt(prog) + ' / ' + fmt(quest.target) +
+      '</div>' +
+      (done && !quest.claimed
+        ? '<button class="quest-claim" onclick="claimQuest('+idx+')">🎁 Claim!</button>'
+        : quest.claimed ? '<div style="font-size:10px;color:#5DBB63;margin-top:4px;font-family:Nunito,sans-serif">✓ Claimed</div>' : '');
+    container.appendChild(div);
+  });
+}
+
+// ─── TAB SWITCHING ───
+function switchLeftTab(tab, btn) {
+  ['upg','ach'].forEach(t => {
+    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
+  });
+  document.querySelectorAll('.left-panel .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+function switchRightTab(tab, btn) {
+  ['gen','quest'].forEach(t => {
+    document.getElementById('tab-'+t).classList.toggle('active', t===tab);
+  });
+  document.querySelectorAll('.right-panel .tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+// ─── PASSIVE INCOME ───
+setInterval(() => {
+  if (S.cps > 0) {
+    S.passiveBucket += S.cps / 20;
+    const whole = Math.floor(S.passiveBucket);
+    if (whole > 0) {
+      S.passiveBucket -= whole;
+      S.stars = Math.floor(S.stars) + whole;
+      S.totalEarned += whole;
+      checkMilestones();
+    }
+    updateUI();
+    checkAchievements();
+  }
+}, 50);
+
+// ─── INIT ───
+applyPrestigeTheme();
+initQuests();
+recalcCPS();
+updateUI();
+checkAchievements();
+// Restore milestone set
+for (const [n] of MILESTONES) {
+  if (S.totalEarned >= n) shownMilestones.add(n);
+}
+for (const ach of ACHIEVEMENTS) {
+  if (S.upgrades['ach_'+ach.id]) shownAchievements.add(ach.id);
+}
+</script>
+</body>
+</html>
