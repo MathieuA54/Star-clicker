@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blueberry Cocktail — Fresh & Handcrafted</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --ink:#0D0A14;
+  --ink2:#2C2438;
+  --plum:#3D1F5C;
+  --berry:#6B3FA0;
+  --violet:#9B6FD0;
+  --lavender:#C8A8F0;
+  --blush:#F0E8FF;
+  --cream:#FAF7F2;
+  --gold:#C8922A;
+  --gold-light:#F5E4C0;
+  --teal:#1A7A65;
+  --teal-light:#E0F5F0;
+  --rose:#C04060;
+  --rose-light:#FCE8EE;
+  --white:#FFFFFF;
+  --nav-h:70px;
+}
+html{scroll-behavior:smooth}
+body{font-family:'Outfit',sans-serif;background:var(--cream);color:var(--ink);overflow-x:hidden}
+
+/* ── STICKY NAV ─────────────────────────────────────────── */
+.nav{
+  position:fixed;top:0;left:0;right:0;z-index:1000;
+  height:var(--nav-h);
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 clamp(1.5rem,4vw,4rem);
+  background:rgba(13,10,20,0.0);
+  backdrop-filter:blur(0px);
+  transition:background .4s,backdrop-filter .4s,box-shadow .4s;
+}
+.nav.scrolled{
+  background:rgba(13,10,20,0.88);
+  backdrop-filter:blur(18px);
+  box-shadow:0 1px 0 rgba(255,255,255,0.06);
+}
+.nav-logo{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.55rem;font-weight:700;
+  color:#fff;letter-spacing:0.02em;
+  text-decoration:none;display:flex;align-items:center;gap:.4rem;
+}
+.nav-logo span{color:var(--lavender)}
+.nav-links{display:flex;gap:.25rem;flex-wrap:wrap}
+.nav-links a{
+  color:rgba(255,255,255,.7);text-decoration:none;
+  font-size:.78rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;
+  padding:.45rem .75rem;border-radius:50px;
+  transition:color .2s,background .2s;
+}
+.nav-links a:hover{color:#fff;background:rgba(255,255,255,.1)}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;padding:.5rem}
+.hamburger span{display:block;width:22px;height:1.5px;background:#fff;transition:.3s}
+@media(max-width:820px){
+  .nav-links{display:none;position:fixed;top:var(--nav-h);left:0;right:0;bottom:0;background:rgba(13,10,20,.97);flex-direction:column;align-items:center;justify-content:center;gap:1.5rem;z-index:999}
+  .nav-links.open{display:flex}
+  .nav-links a{font-size:1.1rem}
+  .hamburger{display:flex}
+}
+
+/* ── HERO ───────────────────────────────────────────────── */
+.hero{
+  min-height:100vh;
+  position:relative;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;
+  background:#0D0A14;
+}
+.hero-bg{
+  position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 80% 60% at 70% 40%, rgba(107,63,160,.45) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 20% 70%, rgba(26,122,101,.25) 0%, transparent 55%),
+    url('https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=1600&q=85') center/cover no-repeat;
+  filter:brightness(.38);
+}
+.hero-overlay{
+  position:absolute;inset:0;
+  background:linear-gradient(to bottom, transparent 50%, rgba(13,10,20,.95) 100%);
+}
+.hero-content{
+  position:relative;z-index:1;
+  text-align:center;padding:8rem 2rem 6rem;max-width:900px;
+}
+.hero-eyebrow{
+  display:inline-flex;align-items:center;gap:.5rem;
+  background:rgba(155,111,208,.18);border:1px solid rgba(155,111,208,.35);
+  color:var(--lavender);font-size:.72rem;letter-spacing:.25em;text-transform:uppercase;font-weight:500;
+  padding:.4rem 1.2rem;border-radius:50px;margin-bottom:2rem;
+}
+.hero h1{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(4rem,10vw,9rem);
+  font-weight:300;color:#fff;line-height:.95;
+  margin-bottom:.5rem;letter-spacing:-.02em;
+}
+.hero h1 em{
+  font-style:italic;color:var(--lavender);display:block;
+}
+.hero-sub{
+  font-size:1.05rem;color:rgba(255,255,255,.55);
+  max-width:460px;margin:1.5rem auto 3rem;line-height:1.8;font-weight:300;
+}
+.hero-nav{
+  display:flex;gap:.75rem;flex-wrap:wrap;justify-content:center;
+}
+.hero-pill{
+  background:rgba(255,255,255,.08);
+  border:1px solid rgba(255,255,255,.18);
+  color:rgba(255,255,255,.9);
+  text-decoration:none;
+  padding:.65rem 1.4rem;border-radius:50px;
+  font-size:.83rem;font-weight:500;
+  transition:all .25s;
+  display:flex;align-items:center;gap:.4rem;
+}
+.hero-pill:hover{background:rgba(155,111,208,.3);border-color:var(--lavender);transform:translateY(-2px)}
+.scroll-line{
+  position:absolute;bottom:2rem;left:50%;transform:translateX(-50%);
+  display:flex;flex-direction:column;align-items:center;gap:.4rem;
+  color:rgba(255,255,255,.3);font-size:.65rem;letter-spacing:.2em;text-transform:uppercase;
+}
+.scroll-line::before{
+  content:'';display:block;width:1px;height:40px;
+  background:linear-gradient(to bottom,transparent,rgba(155,111,208,.6));
+  animation:scrollpulse 2s infinite;
+}
+@keyframes scrollpulse{0%,100%{opacity:.3}50%{opacity:1}}
+
+/* ── SECTION WRAPPERS ───────────────────────────────────── */
+.section-wrap{padding:5rem clamp(1.5rem,5vw,5rem)}
+.section-wrap.dark{background:var(--plum)}
+.section-wrap.darker{background:#0D0A14}
+.section-wrap.gold-bg{background:#1E1508}
+.section-wrap.teal-bg{background:#071814}
+.section-wrap.rose-bg{background:var(--rose-light)}
+.section-wrap.blush{background:var(--blush)}
+.inner{max-width:1300px;margin:0 auto}
+
+/* ── SECTION HEADER ─────────────────────────────────────── */
+.sh{text-align:center;margin-bottom:3.5rem}
+.sh-tag{
+  display:inline-flex;align-items:center;gap:.4rem;
+  font-size:.68rem;letter-spacing:.25em;text-transform:uppercase;font-weight:600;
+  color:var(--violet);margin-bottom:.75rem;
+}
+.sh-tag.gold{color:var(--gold)}
+.sh-tag.teal{color:var(--teal)}
+.sh-tag.rose{color:var(--rose)}
+.sh-tag.white{color:rgba(255,255,255,.6)}
+.sh h2{
+  font-family:'Cormorant Garamond',serif;
+  font-size:clamp(2.2rem,4.5vw,3.5rem);
+  font-weight:600;line-height:1.1;
+}
+.sh h2.light{color:#fff}
+.sh-line{
+  width:48px;height:2px;border-radius:1px;
+  background:var(--violet);margin:1.2rem auto 0;
+}
+.sh-line.gold{background:var(--gold)}
+.sh-line.teal{background:var(--teal)}
+.sh-line.rose{background:var(--rose)}
+.sh-line.white{background:rgba(255,255,255,.4)}
+
+/* ── PHOTO CARD (smoothies, frappé) ─────────────────────── */
+.photo-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(220px,1fr));
+  gap:1.25rem;
+}
+.photo-card{
+  border-radius:18px;overflow:hidden;background:#fff;
+  box-shadow:0 4px 24px rgba(61,31,92,.08);
+  transition:transform .35s,box-shadow .35s;
+  cursor:default;
+}
+.photo-card:hover{transform:translateY(-7px);box-shadow:0 14px 40px rgba(61,31,92,.18)}
+.photo-card img{
+  width:100%;height:210px;object-fit:cover;display:block;
+  transition:transform .6s;
+}
+.photo-card:hover img{transform:scale(1.06)}
+.pc-body{padding:1.1rem 1.3rem}
+.pc-name{font-size:.95rem;font-weight:600;color:var(--ink);margin-bottom:.35rem;line-height:1.3}
+.pc-price{
+  font-family:'Cormorant Garamond',serif;
+  font-size:1.4rem;font-weight:700;color:var(--berry);
+}
+
+/* ── DARK PHOTO CARD (cocktails, specialties) ───────────── */
+.dark-photo-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(240px,1fr));
+  gap:1.25rem;
+}
+.dark-photo-card{
+  border-radius:18px;overflow:hidden;
+  border:1px solid rgba(155,111,208,.2);
+  background:#17102A;
+  transition:transform .35s,border-color .3s;
+}
+.dark-photo-card:hover{transform:translateY(-6px);border-color:rgba(155,111,208,.5)}
+.dark-photo-card img{width:100%;height:200px;object-fit:cover;display:block;opacity:.85;transition:opacity .3s,transform .6s}
+.dark-photo-card:hover img{opacity:1;transform:scale(1.05)}
+.dpc-body{padding:1.1rem 1.3rem}
+.dpc-name{font-size:1rem;font-weight:600;color:#fff;margin-bottom:.5rem;line-height:1.3}
+.dpc-price{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--lavender);font-weight:600}
+
+/* ── COCKTAIL SIZE CARD ─────────────────────────────────── */
+.cocktail-card{
+  border-radius:16px;overflow:hidden;
+  border:1px solid rgba(26,122,101,.2);background:#0A1A17;
+  transition:transform .3s,border-color .3s;
+}
+.cocktail-card:hover{transform:translateY(-5px);border-color:rgba(26,122,101,.5)}
+.cocktail-card img{width:100%;height:180px;object-fit:cover;display:block;opacity:.8;transition:opacity .3s}
+.cocktail-card:hover img{opacity:1}
+.cc-head{padding:1rem 1.25rem;border-bottom:1px solid rgba(26,122,101,.15)}
+.cc-name{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:600;color:#fff}
+.cc-sizes{padding:.75rem 1.25rem}
+.cc-row{display:flex;justify-content:space-between;padding:.35rem 0;font-size:.85rem;border-bottom:1px solid rgba(255,255,255,.05)}
+.cc-row:last-child{border-bottom:none}
+.cc-sz{color:rgba(255,255,255,.45)}
+.cc-pr{color:#5DCAA5;font-weight:600}
+
+/* ── JUICE CARD ─────────────────────────────────────────── */
+.juice-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(210px,1fr));
+  gap:1.1rem;
+}
+.juice-card{
+  background:#fff;border-radius:16px;overflow:hidden;
+  box-shadow:0 2px 14px rgba(26,122,101,.07);
+  transition:transform .3s;
+}
+.juice-card:hover{transform:translateY(-5px)}
+.juice-card img{width:100%;height:150px;object-fit:cover;display:block}
+.jc-body{padding:1rem 1.1rem}
+.jc-name{font-weight:600;font-size:.9rem;margin-bottom:.75rem;color:var(--ink)}
+.jc-row{display:flex;justify-content:space-between;font-size:.82rem;padding:.25rem 0;border-bottom:1px solid #f0ece8}
+.jc-row:last-child{border-bottom:none}
+.jc-label{color:#888}
+.jc-price{color:var(--teal);font-weight:600}
+
+/* ── PILL GRID (mojitos) ─────────────────────────────────── */
+.pill-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(160px,1fr));
+  gap:.9rem;
+}
+.flavor-pill{
+  background:#fff;border-radius:14px;
+  border:1.5px solid rgba(192,64,96,.12);
+  padding:1.1rem 1rem;text-align:center;
+  transition:all .25s;box-shadow:0 2px 12px rgba(192,64,96,.06);
+}
+.flavor-pill:hover{border-color:var(--rose);transform:scale(1.04);box-shadow:0 6px 20px rgba(192,64,96,.14)}
+.fp-icon{font-size:1.6rem;margin-bottom:.4rem}
+.fp-name{font-size:.82rem;font-weight:600;color:var(--ink);line-height:1.3;margin-bottom:.3rem}
+.fp-price{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;color:var(--rose)}
+
+/* ── PLATTER CARD ───────────────────────────────────────── */
+.platter-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(270px,1fr));
+  gap:1.3rem;
+}
+.platter-card{
+  background:#fff;border-radius:18px;overflow:hidden;
+  box-shadow:0 2px 20px rgba(200,146,42,.08);
+  border-top:3px solid var(--gold);
+  transition:transform .3s;
+}
+.platter-card:hover{transform:translateY(-5px)}
+.platter-card img{width:100%;height:170px;object-fit:cover;display:block}
+.platter-top{background:var(--gold-light);padding:1.1rem 1.3rem .8rem}
+.platter-emoji{font-size:1.5rem;margin-bottom:.3rem}
+.platter-name{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-weight:700;color:#5A3500}
+.platter-sizes{padding:.8rem 1.3rem}
+.platter-row{display:flex;justify-content:space-between;padding:.35rem 0;font-size:.87rem;border-bottom:1px solid #f5f0f8}
+.platter-row:last-child{border-bottom:none}
+.platter-sz{color:#888}
+.platter-pr{font-weight:700;color:var(--berry)}
+
+/* ── HOT DRINKS ─────────────────────────────────────────── */
+.hot-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(230px,1fr));
+  gap:1rem;
+  max-width:900px;margin:0 auto;
+}
+.hot-item{
+  background:#fff;border-radius:12px;
+  padding:1rem 1.3rem;display:flex;justify-content:space-between;align-items:center;
+  box-shadow:0 2px 10px rgba(200,146,42,.08);
+  border-left:3px solid var(--gold);
+  transition:transform .25s;
+}
+.hot-item:hover{transform:translateX(4px)}
+.hot-name{font-size:.9rem;color:var(--ink)}
+.hot-price{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:700;color:var(--gold)}
+
+/* ── WAFFLE FEATURE ─────────────────────────────────────── */
+.waffle-feature{
+  display:grid;grid-template-columns:1fr 1fr;
+  border-radius:24px;overflow:hidden;
+  background:var(--ink);min-height:360px;
+}
+@media(max-width:680px){.waffle-feature{grid-template-columns:1fr}}
+.waffle-img-side img{width:100%;height:100%;object-fit:cover;display:block}
+.waffle-text{
+  padding:3rem;display:flex;flex-direction:column;justify-content:center;
+}
+.waffle-tag{color:var(--gold);font-size:.68rem;letter-spacing:.22em;text-transform:uppercase;font-weight:700;margin-bottom:1rem}
+.waffle-title{font-family:'Cormorant Garamond',serif;font-size:2.6rem;font-weight:600;color:#fff;margin-bottom:.5rem}
+.waffle-price{font-size:3.5rem;font-weight:300;color:var(--gold);font-family:'Cormorant Garamond',serif}
+.waffle-desc{color:rgba(255,255,255,.5);font-size:.9rem;line-height:1.8;margin-top:1rem;font-weight:300}
+
+/* ── SPECIALTY CARDS ─────────────────────────────────────── */
+.special-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+  gap:1.5rem;
+}
+.special-card{
+  background:rgba(255,255,255,.07);
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:20px;overflow:hidden;
+  transition:all .3s;
+}
+.special-card:hover{background:rgba(255,255,255,.11);transform:translateY(-5px)}
+.special-card img{width:100%;height:220px;object-fit:cover;display:block;opacity:.8;transition:opacity .3s}
+.special-card:hover img{opacity:1}
+.sc-body{padding:1.5rem 1.5rem 1.75rem;text-align:center}
+.sc-badge{
+  display:inline-block;background:var(--gold);color:#2D1A00;
+  font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;font-weight:700;
+  padding:.25rem .8rem;border-radius:50px;margin-bottom:.85rem;
+}
+.sc-name{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:600;color:#fff;margin-bottom:.5rem}
+.sc-price{font-size:2.2rem;font-weight:300;color:var(--lavender);font-family:'Cormorant Garamond',serif}
+
+/* ── CANS ────────────────────────────────────────────────── */
+.cans-grid{
+  display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));
+  gap:1.1rem;max-width:700px;margin:0 auto;
+}
+.can-card{
+  background:#fff;border-radius:16px;overflow:hidden;
+  text-align:center;box-shadow:0 2px 14px rgba(61,31,92,.07);
+  transition:transform .3s;
+}
+.can-card:hover{transform:translateY(-5px)}
+.can-card img{width:100%;height:160px;object-fit:cover;display:block}
+.can-body{padding:1.1rem}
+.can-name{font-weight:700;font-size:.95rem;margin-bottom:.75rem;color:var(--ink)}
+.can-prices{display:flex;justify-content:center;gap:1.5rem}
+.can-sz{text-align:center}
+.can-sz-label{font-size:.75rem;color:#888;margin-bottom:.15rem}
+.can-sz-price{font-family:'Cormorant Garamond',serif;font-size:1.2rem;font-weight:700;color:var(--berry)}
+
+/* ── FOOTER ─────────────────────────────────────────────── */
+footer{
+  background:#0D0A14;color:rgba(255,255,255,.4);
+  text-align:center;padding:4rem 2rem;font-size:.88rem;
+}
+footer strong{
+  display:block;font-family:'Cormorant Garamond',serif;
+  font-size:1.8rem;font-weight:600;color:#fff;margin-bottom:.5rem;
+}
+footer .tagline{color:rgba(155,111,208,.7);font-size:.8rem;letter-spacing:.1em;margin-bottom:1.5rem}
+footer .divider{width:60px;height:1px;background:rgba(255,255,255,.1);margin:1.5rem auto}
+
+/* ── DIVIDER ORNAMENT ───────────────────────────────────── */
+.ornament{
+  text-align:center;padding:1.5rem 0;
+  color:rgba(107,63,160,.3);font-size:1.4rem;letter-spacing:.5em;
+}
+
+/* ── BACK TO TOP ────────────────────────────────────────── */
+#btt{
+  position:fixed;bottom:2rem;right:2rem;z-index:999;
+  width:46px;height:46px;border-radius:50%;
+  background:var(--plum);border:1px solid rgba(155,111,208,.4);
+  color:#fff;font-size:1.1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  opacity:0;pointer-events:none;
+  transition:opacity .3s,transform .3s;
+  text-decoration:none;
+}
+#btt.visible{opacity:1;pointer-events:auto}
+#btt:hover{transform:translateY(-3px)}
+</style>
+</head>
+<body>
+
+<!-- STICKY NAV -->
+<nav class="nav" id="nav">
+  <a href="#hero" class="nav-logo">🫐 <span>Blueberry</span> Cocktail</a>
+  <div class="nav-links" id="nav-links">
+    <a href="#smoothies">Smoothies</a>
+    <a href="#specialties">Specialties</a>
+    <a href="#waffles">Waffles</a>
+    <a href="#crepes">Crêpes</a>
+    <a href="#juices">Juices</a>
+    <a href="#mojitos">Mojitos</a>
+    <a href="#frappe">Frappé</a>
+    <a href="#cocktails">Cocktails</a>
+    <a href="#platters">Platters</a>
+    <a href="#hot">Hot Drinks</a>
+  </div>
+  <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero" id="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">🫐 &nbsp; Fresh · Natural · Handcrafted</div>
+    <h1>Blueberry<em>Cocktail</em></h1>
+    <p class="hero-sub">Signature smoothies, artisan crêpes, fresh juices & sweet indulgences — crafted with care, served with love.</p>
+    <div class="hero-nav">
+      <a href="#smoothies" class="hero-pill">🥤 Smoothies</a>
+      <a href="#crepes" class="hero-pill">🥞 Crêpes</a>
+      <a href="#juices" class="hero-pill">🍊 Juices</a>
+      <a href="#cocktails" class="hero-pill">🍹 Cocktails</a>
+      <a href="#hot" class="hero-pill">☕ Hot Drinks</a>
+      <a href="#platters" class="hero-pill">🍓 Platters</a>
+    </div>
+  </div>
+  <div class="scroll-line">Scroll</div>
+</section>
+
+<!-- ── SMOOTHIES ────────────────────────────────────────── -->
+<section class="section-wrap" id="smoothies">
+  <div class="inner">
+    <div class="sh">
+      <div class="sh-tag">🥤 Fresh & Blended</div>
+      <h2>Smoothies</h2>
+      <div class="sh-line"></div>
+    </div>
+    <div class="photo-grid">
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=500&q=80" alt="Strawberry Banana">
+        <div class="pc-body">
+          <div class="pc-name">Strawberry &amp; Banana Smoothie</div>
+          <div class="pc-price">$5.00</div>
+        </div>
+      </div>
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?w=500&q=80" alt="Mango Smoothie">
+        <div class="pc-body">
+          <div class="pc-name">Mango Smoothie</div>
+          <div class="pc-price">$5.00</div>
+        </div>
+      </div>
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=500&q=80" alt="Fruits Smoothie">
+        <div class="pc-body">
+          <div class="pc-name">Fruits Smoothie</div>
+          <div class="pc-price">$5.00</div>
+        </div>
+      </div>
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1638176066631-6e4ed7a7c74d?w=500&q=80" alt="Mixed Berries">
+        <div class="pc-body">
+          <div class="pc-name">Mixed Berries Smoothie</div>
+          <div class="pc-price">$5.00</div>
+        </div>
+      </div>
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1494597564530-871f2b93ac55?w=500&q=80" alt="Blueberry Smoothie">
+        <div class="pc-body">
+          <div class="pc-name">Special Blueberry Smoothie</div>
+          <div class="pc-price">$5.00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── ROYAL SPECIALTIES ────────────────────────────────── -->
+<section class="section-wrap dark" id="specialties">
+  <div class="inner">
+    <div class="sh">
+      <div class="sh-tag white">👑 Premium Selection</div>
+      <h2 class="light">Royal Specialties</h2>
+      <div class="sh-line white"></div>
+    </div>
+    <div class="special-grid">
+      <div class="special-card">
+        <img src="https://images.unsplash.com/photo-1546173159-315724a31696?w=600&q=80" alt="Royal Specialty">
+        <div class="sc-body">
+          <div class="sc-badge">Signature</div>
+          <div class="sc-name">The Royal Specialty</div>
+          <div class="sc-price">$20.00</div>
+        </div>
+      </div>
+      <div class="special-card">
+        <img src="https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=600&q=80" alt="Special Melon">
+        <div class="sc-body">
+          <div class="sc-badge">Limited</div>
+          <div class="sc-name">Special Melon</div>
+          <div class="sc-price">$30.00</div>
+        </div>
+      </div>
+      <div class="special-card">
+        <img src="https://images.unsplash.com/photo-1490474504059-bf2db5ab2348?w=600&q=80" alt="Special Pineapple">
+        <div class="sc-body">
+          <div class="sc-badge">Tropical</div>
+          <div class="sc-name">Special Pineapple</div>
+          <div class="sc-price">$25.00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── WAFFLES ───────────────────────────────────────────── -->
+<section class="section-wrap gold-bg" id="waffles">
+  <div class="inner">
+    <div class="sh">
+      <div class="sh-tag gold">🧇 Golden & Crispy</div>
+      <h2 class="light">Waffles</h2>
+      <div class="sh-line gold"></div>
+    </div>
+    <div class="waffle-feature">
+      <div class="waffle-img-side">
+        <img src="https://images.unsplash.com/photo-1562376552-0d160a2f238d?w=700&q=85" alt="Nutella Waffle">
+      </div>
+      <div class="waffle-text">
+        <div class="waffle-tag">⭐ Fan Favourite</div>
+        <div class="waffle-title">Nutella Waffle</div>
+        <div class="waffle-price">$16</div>
+        <div class="waffle-desc">Golden, crisp waffle loaded with rich Nutella hazelnut cream — a timeless indulgence, served warm with love.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CRÊPES ────────────────────────────────────────────── -->
+<section class="section-wrap blush" id="crepes">
+  <div class="inner">
+    <div class="sh">
+      <div class="sh-tag">🥞 Handmade</div>
+      <h2>Special Crêpes</h2>
+      <div class="sh-line"></div>
+    </div>
+    <div class="photo-grid">
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1587314168485-3236d6710814?w=500&q=80" alt="Chocolate Crêpe">
+        <div class="pc-body">
+          <div class="pc-name">Chocolate Crêpe (no fruits)</div>
+          <div class="pc-price">$10.00</div>
+        </div>
+      </div>
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1519676867240-f03562e64548?w=500&q=80" alt="Suchi Crêpe">
+        <div class="pc-body">
+          <div class="pc-name">Suchi Crêpe, 7pcs</div>
+          <div class="pc-price">$10.00</div>
+        </div>
+      </div>
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1571115177098-24ec42ed204d?w=500&q=80" alt="Fettuccini Crêpe">
+        <div class="pc-body">
+          <div class="pc-name">Fettuccini Crêpe</div>
+          <div class="pc-price">$16.00</div>
+        </div>
+      </div>
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1606313564200-e75d5e30476c?w=500&q=80" alt="Roll Brownie Crêpe">
+        <div class="pc-body">
+          <div class="pc-name">Roll Brownie Crêpe</div>
+          <div class="pc-price">$16.00</div>
+        </div>
+      </div>
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1558024920-b41e1887dc32?w=500&q=80" alt="Lotus Delight">
+        <div class="pc-body">
+          <div class="pc-name">Lotus Delight</div>
+          <div class="pc-price">$16.00</div>
+        </div>
+      </div>
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1464305795204-6f5bbfc7fb81?w=500&q=80" alt="Fruity Crêpe">
+        <div class="pc-body">
+          <div class="pc-name">Fruity Crêpe</div>
+          <div class="pc-price">$16.00</div>
+        </div>
+      </div>
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1630416932826-4a4b88c5d1f5?w=500&q=80" alt="Nutella Fruitella">
+        <div class="pc-body">
+          <div class="pc-name">Nutella Fruitella</div>
+          <div class="pc-price">$16.00</div>
+        </div>
+      </div>
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=500&q=80" alt="Special Blueberry Crêpe">
+        <div class="pc-body">
+          <div class="pc-name">Special Blueberry Crêpe</div>
+          <div class="pc-price">$14.00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── PANCAKES ───────────────────────────────────────────── -->
+<section class="section-wrap" id="pancakes">
+  <div class="inner">
+    <div class="sh">
+      <div class="sh-tag">🫐 Stack & Drizzle</div>
+      <h2>Pancakes</h2>
+      <div class="sh-line"></div>
+    </div>
+    <div class="photo-grid">
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1558024920-b41e1887dc32?w=500&q=80" alt="Lotus Pancake">
+        <div class="pc-body">
+          <div class="pc-name">Lotus Pancake</div>
+          <div class="pc-price">$16.00</div>
+        </div>
+      </div>
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1567620905732-2d1ec7ab7445?w=500&q=80" alt="Nutella Pancake">
+        <div class="pc-body">
+          <div class="pc-name">Nutella Pancake</div>
+          <div class="pc-price">$16.00</div>
+        </div>
+      </div>
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1519984388953-d2406bc725e1?w=500&q=80" alt="Fruity Pancake">
+        <div class="pc-body">
+          <div class="pc-name">Fruity Pancake</div>
+          <div class="pc-price">$16.00</div>
+        </div>
+      </div>
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1554520735-0a6b8b6ce8b7?w=500&q=80" alt="Special Blueberry Pancake">
+        <div class="pc-body">
+          <div class="pc-name">Special Blueberry Pancake</div>
+          <div class="pc-price">$16.00</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FRESH JUICES ──────────────────────────────────────── -->
+<section class="section-wrap teal-bg" id="juices">
+  <div class="inner">
+    <div class="sh">
+      <div class="sh-tag teal">🍊 Squeezed to Order</div>
+      <h2 class="light">Fresh Juices</h2>
+      <div class="sh-line teal"></div>
+    </div>
+    <div class="juice-grid">
+      <div class="juice-card">
+        <img src="https://images.unsplash.com/photo-1621506289937-a8e4df240d0b?w=400&q=80" alt="Orange Juice">
+        <div class="jc-body">
+          <div class="jc-name">🍊 Sunny Orange</div>
+          <div class="jc-row"><span class="jc-label">Small</span><span class="jc-price">$1.75</span></div>
+          <div class="jc-row"><span class="jc-label">Medium</span><span class="jc-price">$2.50</span></div>
+          <div class="jc-row"><span class="jc-label">Large</span><span class="jc-price">$3.00</span></div>
+          <div class="jc-row"><span class="jc-label">0.5L</span><span class="jc-price">$3.00</span></div>
+          <div class="jc-row"><span class="jc-label">1L</span><span class="jc-price">$6.00</span></div>
+        </div>
+      </div>
+      <div class="juice-card">
+        <img src="https://images.unsplash.com/photo-1582979512210-99b6a53386f9?w=400&q=80" alt="Lemonade">
+        <div class="jc-body">
+          <div class="jc-name">🍋 Lemonade</div>
+          <div class="jc-row"><span class="jc-label">Small</span><span class="jc-price">$1.75</span></div>
+          <div class="jc-row"><span class="jc-label">Medium</span><span class="jc-price">$2.50</span></div>
+          <div class="jc-row"><span class="jc-label">Large</span><span class="jc-price">$3.00</span></div>
+          <div class="jc-row"><span class="jc-label">0.5L</span><span class="jc-price">$3.00</span></div>
+          <div class="jc-row"><span class="jc-label">1L</span><span class="jc-price">$6.00</span></div>
+        </div>
+      </div>
+      <div class="juice-card">
+        <img src="https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=400&q=80" alt="Lemon Mint">
+        <div class="jc-body">
+          <div class="jc-name">🍋 Lemon Mint</div>
+          <div class="jc-row"><span class="jc-label">Small</span><span class="jc-price">$1.75</span></div>
+          <div class="jc-row"><span class="jc-label">Medium</span><span class="jc-price">$2.50</span></div>
+          <div class="jc-row"><span class="jc-label">Large</span><span class="jc-price">$3.00</span></div>
+        </div>
+      </div>
+      <div class="juice-card">
+        <img src="https://images.unsplash.com/photo-1612540139150-4b5a86c7b522?w=400&q=80" alt="Carrot Juice">
+        <div class="jc-body">
+          <div class="jc-name">🥕 Carrot (Jazar)</div>
+          <div class="jc-row"><span class="jc-label">Small</span><span class="jc-price">$2.00</span></div>
+          <div class="jc-row"><span class="jc-label">Medium</span><span class="jc-price">$2.50</span></div>
+          <div class="jc-row"><span class="jc-label">Large</span><span class="jc-price">$3.00</span></div>
+          <div class="jc-row"><span class="jc-label">0.5L</span><span class="jc-price">$3.00</span></div>
+          <div class="jc-row"><span class="jc-label">1L</span><span class="jc-price">$6.00</span></div>
+        </div>
+      </div>
+      <div class="juice-card">
+        <img src="https://images.unsplash.com/photo-1546173159-315724a31696?w=400&q=80" alt="Kiwi Juice">
+        <div class="jc-body">
+          <div class="jc-name">🥝 Kiwi</div>
+          <div class="jc-row"><span class="jc-label">Small</span><span class="jc-price">$4.00</span></div>
+          <div class="jc-row"><span class="jc-label">Medium</span><span class="jc-price">$5.00</span></div>
+          <div class="jc-row"><span class="jc-label">Large</span><span class="jc-price">$6.00</span></div>
+          <div class="jc-row"><span class="jc-label">0.5L</span><span class="jc-price">$4.00</span></div>
+          <div class="jc-row"><span class="jc-label">1L</span><span class="jc-price">$8.00</span></div>
+        </div>
+      </div>
+      <div class="juice-card">
+        <img src="https://images.unsplash.com/photo-1623065422902-30a2d299bbe4?w=400&q=80" alt="Mango Cocktail">
+        <div class="jc-body">
+          <div class="jc-name">🥭 Mango Cocktail</div>
+          <div class="jc-row"><span class="jc-label">Small</span><span class="jc-price">$4.00</span></div>
+          <div class="jc-row"><span class="jc-label">Medium</span><span class="jc-price">$5.00</span></div>
+          <div class="jc-row"><span class="jc-label">Large</span><span class="jc-price">$6.00</span></div>
+          <div class="jc-row"><span class="jc-label">0.5L</span><span class="jc-price">$4.00</span></div>
+          <div class="jc-row"><span class="jc-label">1L</span><span class="jc-price">$8.00</span></div>
+        </div>
+      </div>
+      <div class="juice-card">
+        <img src="https://images.unsplash.com/photo-1490474504059-bf2db5ab2348?w=400&q=80" alt="Pineapple">
+        <div class="jc-body">
+          <div class="jc-name">🍍 Pineapple Paradise</div>
+          <div class="jc-row"><span class="jc-label">Small</span><span class="jc-price">$4.00</span></div>
+          <div class="jc-row"><span class="jc-label">Medium</span><span class="jc-price">$5.00</span></div>
+          <div class="jc-row"><span class="jc-label">Large</span><span class="jc-price">$6.00</span></div>
+        </div>
+      </div>
+      <div class="juice-card">
+        <img src="https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=400&q=80" alt="Strawberry Juice">
+        <div class="jc-body">
+          <div class="jc-name">🍓 Strawberry</div>
+          <div class="jc-row"><span class="jc-label">Small</span><span class="jc-price">$4.00</span></div>
+          <div class="jc-row"><span class="jc-label">Medium</span><span class="jc-price">$5.00</span></div>
+          <div class="jc-row"><span class="jc-label">Large</span><span class="jc-price">$6.00</span></div>
+          <div class="jc-row"><span class="jc-label">0.5L</span><span class="jc-price">$4.00</span></div>
+          <div class="jc-row"><span class="jc-label">1L</span><span class="jc-price">$8.00</span></div>
+        </div>
+      </div>
+      <div class="juice-card">
+        <img src="https://images.unsplash.com/photo-1563746098251-d35aef196e83?w=400&q=80" alt="Pomegranate">
+        <div class="jc-body">
+          <div class="jc-name">🍷 Pomegranate</div>
+          <div class="jc-row"><span class="jc-label">0.5L</span><span class="jc-price">$8.00</span></div>
+          <div class="jc-row"><span class="jc-label">1L</span><span class="jc-price">$16.00</span></div>
+        </div>
+      </div>
+      <div class="juice-card">
+        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80" alt="Avocado Juice">
+        <div class="jc-body">
+          <div class="jc-name">🥑 Avocado</div>
+          <div class="jc-row"><span class="jc-label">0.5L</span><span class="jc-price">$4.00</span></div>
+          <div class="jc-row"><span class="jc-label">1L</span><span class="jc-price">$8.00</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── MOJITOS ───────────────────────────────────────────── -->
+<section class="section-wrap rose-bg" id="mojitos">
+  <div class="inner">
+    <div class="sh">
+      <div class="sh-tag rose">🌿 Refreshing</div>
+      <h2>Mojitos</h2>
+      <p style="margin-top:.75rem;color:#888;font-size:.9rem">All flavors — $3.00 each</p>
+      <div class="sh-line rose"></div>
+    </div>
+    <div class="pill-grid">
+      <div class="flavor-pill"><div class="fp-icon">🫐</div><div class="fp-name">Special Blueberry</div><div class="fp-price">$3.00</div></div>
+      <div class="flavor-pill"><div class="fp-icon">🍋</div><div class="fp-name">Lemony</div><div class="fp-price">$3.00</div></div>
+      <div class="flavor-pill"><div class="fp-icon">🍑</div><div class="fp-name">Passion Fruit</div><div class="fp-price">$3.00</div></div>
+      <div class="flavor-pill"><div class="fp-icon">🥭</div><div class="fp-name">Mango Tango</div><div class="fp-price">$3.00</div></div>
+      <div class="flavor-pill"><div class="fp-icon">🥝</div><div class="fp-name">Kiwi Breeze</div><div class="fp-price">$3.00</div></div>
+      <div class="flavor-pill"><div class="fp-icon">🍓</div><div class="fp-name">Strawberry Sunshine</div><div class="fp-price">$3.00</div></div>
+      <div class="flavor-pill"><div class="fp-icon">💙</div><div class="fp-name">Blue Escape</div><div class="fp-price">$3.00</div></div>
+      <div class="flavor-pill"><div class="fp-icon">🍍</div><div class="fp-name">Pineapple Rush</div><div class="fp-price">$3.00</div></div>
+      <div class="flavor-pill"><div class="fp-icon">🍑</div><div class="fp-name">Peach Paradise</div><div class="fp-price">$3.00</div></div>
+      <div class="flavor-pill"><div class="fp-icon">🍇</div><div class="fp-name">Mixed Berries</div><div class="fp-price">$3.00</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FRAPPÉ ────────────────────────────────────────────── -->
+<section class="section-wrap" id="frappe">
+  <div class="inner">
+    <div class="sh">
+      <div class="sh-tag">🧊 Iced & Blended</div>
+      <h2>Frappé</h2>
+      <p style="margin-top:.75rem;color:#888;font-size:.9rem">All flavors — $5.00 each</p>
+      <div class="sh-line"></div>
+    </div>
+    <div class="photo-grid">
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1579954115563-e72bf1381629?w=500&q=80" alt="Vanilla Frappé">
+        <div class="pc-body"><div class="pc-name">Vanilla Frappé</div><div class="pc-price">$5.00</div></div>
+      </div>
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1578314675249-a6910f80cc4e?w=500&q=80" alt="Chocolate Frappé">
+        <div class="pc-body"><div class="pc-name">Chocolate Frappé</div><div class="pc-price">$5.00</div></div>
+      </div>
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1561043433-aaf687c4cf04?w=500&q=80" alt="Caramel Frappé">
+        <div class="pc-body"><div class="pc-name">Caramel Frappé</div><div class="pc-price">$5.00</div></div>
+      </div>
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1514432324607-a09d9b4aefdd?w=500&q=80" alt="Pistachio Frappé">
+        <div class="pc-body"><div class="pc-name">Pistachio Frappé</div><div class="pc-price">$5.00</div></div>
+      </div>
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1517701604599-bb29b565090c?w=500&q=80" alt="Lotus Frappé">
+        <div class="pc-body"><div class="pc-name">Lotus Frappé</div><div class="pc-price">$5.00</div></div>
+      </div>
+      <div class="photo-card">
+        <img src="https://images.unsplash.com/photo-1485808191679-5f86510bd9d4?w=500&q=80" alt="Strawberry Frappé">
+        <div class="pc-body"><div class="pc-name">Strawberry Frappé</div><div class="pc-price">$5.00</div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SIGNATURE COCKTAILS ───────────────────────────────── -->
+<section class="section-wrap darker" id="cocktails">
+  <div class="inner">
+    <div class="sh">
+      <div class="sh-tag teal">🍹 Non-Alcoholic</div>
+      <h2 class="light">Signature Cocktails</h2>
+      <div class="sh-line teal"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1.25rem">
+      <div class="cocktail-card">
+        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=500&q=80" alt="Avocado Cocktail">
+        <div class="cc-head"><div class="cc-name">🥑 Avocado Juice Cocktail</div></div>
+        <div class="cc-sizes">
+          <div class="cc-row"><span class="cc-sz">Small</span><span class="cc-pr">$6.00</span></div>
+          <div class="cc-row"><span class="cc-sz">Medium</span><span class="cc-pr">$7.00</span></div>
+          <div class="cc-row"><span class="cc-sz">Large</span><span class="cc-pr">$8.00</span></div>
+        </div>
+      </div>
+      <div class="cocktail-card">
+        <img src="https://images.unsplash.com/photo-1638176066631-6e4ed7a7c74d?w=500&q=80" alt="Mixed Fruit Explosion">
+        <div class="cc-head"><div class="cc-name">🍓 Mixed Fruit Explosion</div></div>
+        <div class="cc-sizes">
+          <div class="cc-row"><span class="cc-sz">Small</span><span class="cc-pr">$6.00</span></div>
+          <div class="cc-row"><span class="cc-sz">Medium</span><span class="cc-pr">$7.00</span></div>
+          <div class="cc-row"><span class="cc-sz">Large</span><span class="cc-pr">$8.00</span></div>
+        </div>
+      </div>
+      <div class="cocktail-card">
+        <img src="https://images.unsplash.com/photo-1610970881699-44a5587cabec?w=500&q=80" alt="Mixed Juice Cocktail">
+        <div class="cc-head"><div class="cc-name">🍹 Mixed Juice Cocktail</div></div>
+        <div class="cc-sizes">
+          <div class="cc-row"><span class="cc-sz">Small</span><span class="cc-pr">$3.00</span></div>
+          <div class="cc-row"><span class="cc-sz">Medium</span><span class="cc-pr">$4.00</span></div>
+          <div class="cc-row"><span class="cc-sz">Large</span><span class="cc-pr">$5.00</span></div>
+        </div>
+      </div>
+      <div class="cocktail-card">
+        <img src="https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=500&q=80" alt="Milky Banana">
+        <div class="cc-head"><div class="cc-name">🍌 Milky Banana</div></div>
+        <div class="cc-sizes">
+          <div class="cc-row"><span class="cc-sz">Small</span><span class="cc-pr">$4.00</span></div>
+          <div class="cc-row"><span class="cc-sz">Medium</span><span class="cc-pr">$5.00</span></div>
+          <div class="cc-row"><span class="cc-sz">Large</span><span class="cc-pr">$6.00</span></div>
+        </div>
+      </div>
+      <div class="cocktail-card">
+        <img src="https://images.unsplash.com/photo-1546173159-315724a31696?w=500&q=80" alt="Tropical Sunset">
+        <div class="cc-head"><div class="cc-name">🌅 Tropical Sunset</div></div>
+        <div class="cc-sizes">
+          <div class="cc-row"><span class="cc-sz">Small</span><span class="cc-pr">$4.00</span></div>
+          <div class="cc-row"><span class="cc-sz">Medium</span><span class="cc-pr">$5.00</span></div>
+          <div class="cc-row"><span class="cc-sz">Large</span><span class="cc-pr">$6.00</span></div>
+        </div>
+      </div>
+      <div class="cocktail-card">
+        <img src="https://images.unsplash.com/photo-1578314675249-a6910f80cc4e?w=500&q=80" alt="Chocobanana">
+        <div class="cc-head"><div class="cc-name">🍫 Chocobanana</div></div>
+        <div class="cc-sizes">
+          <div class="cc-row"><span class="cc-sz">Small</span><span class="cc-pr">$4.00</span></div>
+          <div class="cc-row"><span class="cc-sz">Medium</span><span class="cc-pr">$5.00</span></div>
+          <div class="cc-row"><span class="cc-sz">Large</span><span class="cc-pr">$6.00</span></div>
+        </div>
+      </div>
+      <div class="cocktail-card">
+        <img src="https://images.unsplash.com/photo-1582979512210-99b6a53386f9?w=500&q=80" alt="Frisco">
+        <div class="cc-head"><div class="cc-name">🥤 Frisco</div></div>
+        <div class="cc-sizes">
+          <div class="cc-row"><span class="cc-sz">Small</span><span class="cc-pr">$4.00</span></div>
+          <div class="cc-row"><span class="cc-sz">Medium</span><span class="cc-pr">$5.00</span></div>
+          <div class="cc-row"><span class="cc-sz">Large</span><span class="cc-pr">$6.00</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── SWEET PLATTERS ─────────────────────────────────────── -->
+<section class="section-wrap" id="platters">
+  <div class="inner">
+    <div class="sh">
+      <div class="sh-tag gold">🍓 Indulgent</div>
+      <h2>Sweet Platters</h2>
+      <div class="sh-line gold"></div>
+    </div>
+    <div class="platter-grid">
+      <div class="platter-card">
+        <img src="https://images.unsplash.com/photo-1488477181946-6428a0291777?w=500&q=80" alt="Sirine's Cup">
+        <div class="platter-top"><div class="platter-emoji">🍯</div><div class="platter-name">Sirine's Cup</div></div>
+        <div class="platter-sizes">
+          <div class="platter-row"><span class="platter-sz">Small</span><span class="platter-pr">$7.00</span></div>
+          <div class="platter-row"><span class="platter-sz">Medium</span><span class="platter-pr">$8.00</span></div>
+        </div>
+      </div>
+      <div class="platter-card">
+        <img src="https://images.unsplash.com/photo-1464305795204-6f5bbfc7fb81?w=500&q=80" alt="Joy Cup">
+        <div class="platter-top"><div class="platter-emoji">😊</div><div class="platter-name">Joy Cup</div></div>
+        <div class="platter-sizes">
+          <div class="platter-row"><span class="platter-sz">Small</span><span class="platter-pr">$7.00</span></div>
+          <div class="platter-row"><span class="platter-sz">Medium</span><span class="platter-pr">$8.00</span></div>
+          <div class="platter-row"><span class="platter-sz">Large</span><span class="platter-pr">$10.00</span></div>
+        </div>
+      </div>
+      <div class="platter-card">
+        <img src="https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=500&q=80" alt="Ashta Honey">
+        <div class="platter-top"><div class="platter-emoji">🥛</div><div class="platter-name">Ashta &amp; Honey</div></div>
+        <div class="platter-sizes">
+          <div class="platter-row"><span class="platter-sz">500g</span><span class="platter-pr">$10.00</span></div>
+          <div class="platter-row"><span class="platter-sz">1000g</span><span class="platter-pr">$20.00</span></div>
+        </div>
+      </div>
+      <div class="platter-card">
+        <img src="https://images.unsplash.com/photo-1558024920-b41e1887dc32?w=500&q=80" alt="Ashta Extra">
+        <div class="platter-top"><div class="platter-emoji">✨</div><div class="platter-name">Ashta Extra</div></div>
+        <div class="platter-sizes">
+          <div class="platter-row"><span class="platter-sz">500g</span><span class="platter-pr">$15.00</span></div>
+          <div class="platter-row"><span class="platter-sz">1000g</span><span class="platter-pr">$30.00</span></div>
+        </div>
+      </div>
+      <div class="platter-card">
+        <img src="https://images.unsplash.com/photo-1553530666-ba11a7da3888?w=500&q=80" alt="Nutella Strawberry">
+        <div class="platter-top"><div class="platter-emoji">🍫</div><div class="platter-name">Nutella + Strawberry</div></div>
+        <div class="platter-sizes">
+          <div class="platter-row"><span class="platter-sz">Small</span><span class="platter-pr">$6.00</span></div>
+          <div class="platter-row"><span class="platter-sz">Medium</span><span class="platter-pr">$7.00</span></div>
+          <div class="platter-row"><span class="platter-sz">Large</span><span class="platter-pr">$8.00</span></div>
+        </div>
+      </div>
+      <div class="platter-card">
+        <img src="https://images.unsplash.com/photo-1494597564530-871f2b93ac55?w=500&q=80" alt="Blueberry Bloom">
+        <div class="platter-top"><div class="platter-emoji">🫐</div><div class="platter-name">Blueberry Bloom</div></div>
+        <div class="platter-sizes">
+          <div class="platter-row"><span class="platter-sz">Small</span><span class="platter-pr">$15.00</span></div>
+          <div class="platter-row"><span class="platter-sz">Large</span><span class="platter-pr">$22.50</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── HOT DRINKS ────────────────────────────────────────── -->
+<section class="section-wrap" style="background:#FFF8F0" id="hot">
+  <div class="inner">
+    <div class="sh">
+      <div class="sh-tag gold">☕ Warm &amp; Cozy</div>
+      <h2>Hot Drinks</h2>
+      <div class="sh-line gold"></div>
+    </div>
+    <div class="hot-grid">
+      <div class="hot-item"><span class="hot-name">Coffee Latté</span><span class="hot-price">$2.50</span></div>
+      <div class="hot-item"><span class="hot-name">White Chocolate Mocha</span><span class="hot-price">$3.00</span></div>
+      <div class="hot-item"><span class="hot-name">Americano</span><span class="hot-price">$2.00</span></div>
+      <div class="hot-item"><span class="hot-name">Spanish Latté</span><span class="hot-price">$3.00</span></div>
+      <div class="hot-item"><span class="hot-name">Coffee Mocha</span><span class="hot-price">$3.00</span></div>
+      <div class="hot-item"><span class="hot-name">Coffee Espresso</span><span class="hot-price">$0.75</span></div>
+      <div class="hot-item"><span class="hot-name">Flavored Latté</span><span class="hot-price">$4.00</span></div>
+      <div class="hot-item"><span class="hot-name">Caramel Macchiato</span><span class="hot-price">$3.00</span></div>
+      <div class="hot-item"><span class="hot-name">Hot Chocolate</span><span class="hot-price">$3.00</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ── CANS ──────────────────────────────────────────────── -->
+<section class="section-wrap blush">
+  <div class="inner">
+    <div class="sh">
+      <div class="sh-tag">🥤 To Go</div>
+      <h2>Blueberry Cans</h2>
+      <div class="sh-line"></div>
+    </div>
+    <div class="cans-grid">
+      <div class="can-card">
+        <img src="https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=400&q=80" alt="Avocado Can">
+        <div class="can-body">
+          <div class="can-name">🥑 Avocado</div>
+          <div class="can-prices">
+            <div class="can-sz"><div class="can-sz-label">350ml</div><div class="can-sz-price">$7.50</div></div>
+            <div class="can-sz"><div class="can-sz-label">500ml</div><div class="can-sz-price">$10.00</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="can-card">
+        <img src="https://images.unsplash.com/photo-1638176066631-6e4ed7a7c74d?w=400&q=80" alt="Fruits Can">
+        <div class="can-body">
+          <div class="can-name">🍓 Fruits</div>
+          <div class="can-prices">
+            <div class="can-sz"><div class="can-sz-label">350ml</div><div class="can-sz-price">$3.50</div></div>
+            <div class="can-sz"><div class="can-sz-label">500ml</div><div class="can-sz-price">$5.00</div></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <strong>🫐 Blueberry Cocktail</strong>
+  <div class="tagline">Fresh · Natural · Handcrafted</div>
+  <div class="divider"></div>
+  Fresh smoothies, cocktails, crêpes &amp; desserts — made with love, every single time.
+</footer>
+
+<!-- BACK TO TOP -->
+<a href="#hero" id="btt" aria-label="Back to top">↑</a>
+
+<script>
+const nav=document.getElementById('nav');
+const btt=document.getElementById('btt');
+window.addEventListener('scroll',()=>{
+  const y=window.scrollY;
+  nav.classList.toggle('scrolled',y>60);
+  btt.classList.toggle('visible',y>400);
+});
+function toggleMenu(){
+  document.getElementById('nav-links').classList.toggle('open');
+}
+document.querySelectorAll('.nav-links a').forEach(a=>{
+  a.addEventListener('click',()=>{
+    document.getElementById('nav-links').classList.remove('open');
+  });
+});
+</script>
+</body>
+</html>
