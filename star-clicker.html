@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>⭐ Star Clicker — Cartoon Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Fredoka One', 'Arial Rounded MT Bold', sans-serif;
+    background: #87CEEB;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Clouds */
+  .cloud {
+    position: fixed;
+    background: white;
+    border-radius: 50px;
+    opacity: 0.85;
+    animation: drift linear infinite;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .cloud::before, .cloud::after {
+    content: '';
+    position: absolute;
+    background: white;
+    border-radius: 50%;
+  }
+  #c1 { width:140px;height:40px;top:8%;animation-duration:32s;animation-delay:-5s; }
+  #c1::before { width:70px;height:60px;top:-32px;left:25px; }
+  #c1::after  { width:50px;height:48px;top:-26px;left:65px; }
+  #c2 { width:100px;height:30px;top:20%;animation-duration:42s;animation-delay:-18s; }
+  #c2::before { width:50px;height:44px;top:-22px;left:18px; }
+  #c3 { width:170px;height:45px;top:4%;animation-duration:55s;animation-delay:-35s; }
+  #c3::before { width:80px;height:65px;top:-36px;left:35px; }
+  #c3::after  { width:60px;height:52px;top:-30px;left:85px; }
+  #c4 { width:90px;height:28px;top:35%;animation-duration:38s;animation-delay:-10s; }
+  #c4::before { width:44px;height:40px;top:-20px;left:14px; }
+
+  @keyframes drift { from { transform: translateX(-250px); } to { transform: translateX(110vw); } }
+
+  /* Ground */
+  .ground {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    height: 90px;
+    background: #5DBB63;
+    border-radius: 50px 50px 0 0;
+    z-index: 1;
+    pointer-events: none;
+  }
+  .ground::before {
+    content: '';
+    position: absolute;
+    top: -24px; left: 0; right: 0;
+    height: 36px;
+    background: #7DD87F;
+    border-radius: 50%;
+  }
+
+  /* Layout */
+  .main-layout {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    min-height: 100vh;
+    align-items: flex-start;
+  }
+
+  .left-panel, .right-panel {
+    width: 220px;
+    min-width: 220px;
+    padding: 18px 12px 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .center-panel {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 18px 0 110px;
+    gap: 12px;
+  }
+
+  /* Score box */
+  .score-box {
+    background: rgba(255,255,255,0.93);
+    border-radius: 24px;
+    padding: 12px 20px;
+    text-align: center;
+    border: 3px solid #FFD700;
+    box-shadow: 0 5px 0 #E6B800, 0 8px 20px rgba(0,0,0,0.1);
+    min-width: 200px;
+  }
+  .score-label { font-size: 13px; color: #AAA; letter-spacing: 1px; font-family: 'Nunito', sans-serif; }
+  .score-val { font-size: 34px; color: #FF6B35; line-height: 1.1; }
+  .score-sub { font-size: 13px; color: #BBB; font-family: 'Nunito', sans-serif; }
+
+  /* Main click button */
+  .click-btn {
+    width: 190px; height: 190px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    background: transparent;
+    position: relative;
+    transition: transform 0.08s;
+    user-select: none;
+    filter: drop-shadow(0 8px 16px rgba(255,200,0,0.4));
+  }
+  .click-btn:active { transform: scale(0.88) rotate(-5deg); }
+  .click-btn:hover { filter: drop-shadow(0 10px 24px rgba(255,200,0,0.6)); }
+  .star-svg { width: 190px; height: 190px; }
+
+  .click-hint {
+    font-size: 14px;
+    color: rgba(255,255,255,0.95);
+    background: rgba(0,0,0,0.18);
+    border-radius: 20px;
+    padding: 5px 16px;
+  }
+
+  /* Panel titles */
+  .panel-title {
+    font-size: 15px;
+    color: rgba(255,255,255,0.97);
+    text-align: center;
+    text-shadow: 1px 2px 0 rgba(0,0,0,0.2);
+    padding: 6px 0;
+    border-bottom: 2px dashed rgba(255,255,255,0.45);
+    margin-bottom: 6px;
+  }
+
+  /* Cards */
+  .upgrade-card {
+    background: rgba(255,255,255,0.93);
+    border-radius: 16px;
+    padding: 9px 11px;
+    border: 2.5px solid #DDD;
+    cursor: pointer;
+    transition: transform 0.1s, border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+  }
+  .upgrade-card:hover:not(.locked) {
+    transform: scale(1.04);
+    border-color: #FFD700;
+    box-shadow: 0 4px 12px rgba(255,215,0,0.3);
+  }
+  .upgrade-card.locked { opacity: 0.45; cursor: not-allowed; }
+  .upgrade-card.owned { border-color: #5DBB63; background: rgba(240,255,240,0.95); }
+  .upg-top { display: flex; align-items: center; gap: 7px; }
+  .upg-icon { font-size: 26px; line-height: 1; }
+  .upg-name { font-size: 13px; color: #333; flex: 1; }
+  .upg-cost { font-size: 12px; font-weight: bold; color: #FF6B35; }
+  .upg-desc { font-size: 11px; color: #999; margin-top: 3px; font-family: 'Nunito', sans-serif; }
+  .upg-owned { font-size: 11px; color: #5DBB63; font-family: 'Nunito', sans-serif; }
+
+  /* Milestone banner */
+  .milestone-banner {
+    position: fixed;
+    top: 24px; left: 50%; transform: translateX(-50%);
+    background: #FFD700;
+    color: #7B5C00;
+    border-radius: 34px;
+    padding: 12px 32px;
+    font-size: 17px;
+    box-shadow: 0 5px 0 #E6B800, 0 8px 24px rgba(0,0,0,0.15);
+    z-index: 9999;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.35s;
+    white-space: nowrap;
+  }
+
+  /* Float text */
+  .float-text {
+    position: fixed;
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 22px;
+    color: #FFD700;
+    text-shadow: 1px 1px 0 #B8860B, -1px -1px 0 #B8860B;
+    pointer-events: none;
+    z-index: 9999;
+    animation: floatUp 0.9s ease-out forwards;
+  }
+  @keyframes floatUp {
+    0%   { opacity: 1; transform: translateY(0) scale(1); }
+    100% { opacity: 0; transform: translateY(-90px) scale(0.6); }
+  }
+
+  /* Prestige */
+  .prestige-btn {
+    background: #a855f7;
+    border: none;
+    border-radius: 22px;
+    color: white;
+    padding: 10px 18px;
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+    box-shadow: 0 4px 0 #7e22ce;
+    display: none;
+    transition: transform 0.1s;
+  }
+  .prestige-btn:hover { transform: scale(1.05); }
+  .prestige-btn:active { transform: scale(0.96); box-shadow: 0 2px 0 #7e22ce; }
+  .prestige-btn.visible { display: block; }
+  .prestige-count { font-size: 12px; color: rgba(255,255,255,0.8); text-align: center; }
+
+  #passive-ticker {
+    font-size: 12px;
+    color: rgba(255,255,255,0.85);
+    text-align: center;
+    font-family: 'Nunito', sans-serif;
+  }
+
+  /* Sound toggle */
+  .sound-btn {
+    background: rgba(255,255,255,0.88);
+    border: 2.5px solid #DDD;
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-family: 'Fredoka One', sans-serif;
+    font-size: 13px;
+    cursor: pointer;
+    color: #555;
+    transition: transform 0.1s, border-color 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .sound-btn:hover { border-color: #FFD700; transform: scale(1.05); }
+  .sound-btn.fart-mode { border-color: #8BC34A; background: rgba(220,255,200,0.9); color: #4a7c00; }
+
+  /* Scrollbar for panels */
+  .left-panel::-webkit-scrollbar, .right-panel::-webkit-scrollbar { width: 4px; }
+  .left-panel::-webkit-scrollbar-track, .right-panel::-webkit-scrollbar-track { background: transparent; }
+  .left-panel::-webkit-scrollbar-thumb, .right-panel::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 2px; }
+
+  /* Responsive */
+  @media (max-width: 700px) {
+    .left-panel, .right-panel { width: 140px; min-width: 140px; padding: 12px 6px 100px; }
+    .score-val { font-size: 26px; }
+    .click-btn { width: 140px; height: 140px; }
+    .star-svg { width: 140px; height: 140px; }
+    .upg-icon { font-size: 20px; }
+    .upg-name { font-size: 11px; }
+  }
+</style>
+</head>
+<body>
+
+<div id="c1" class="cloud"></div>
+<div id="c2" class="cloud"></div>
+<div id="c3" class="cloud"></div>
+<div id="c4" class="cloud"></div>
+<div class="ground"></div>
+
+<div class="main-layout">
+  <div class="left-panel">
+    <div class="panel-title">⬆️ Upgrades</div>
+    <div id="upgrades-list"></div>
+  </div>
+
+  <div class="center-panel">
+    <div class="score-box">
+      <div class="score-label">STARS COLLECTED</div>
+      <div class="score-val" id="score-display">0</div>
+      <div class="score-sub" id="cps-display">0 per sec</div>
+    </div>
+
+    <div id="passive-ticker">Click the star to collect!</div>
+
+    <button class="click-btn" id="main-btn" onclick="doClick(event)" title="Click to collect stars!">
+      <svg class="star-svg" viewBox="0 0 190 190" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <radialGradient id="sg" cx="50%" cy="45%" r="55%">
+            <stop offset="0%" stop-color="#FFFDE7"/>
+            <stop offset="60%" stop-color="#FFD700"/>
+            <stop offset="100%" stop-color="#FFA000"/>
+          </radialGradient>
+          <radialGradient id="glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%" stop-color="#FFD700" stop-opacity="0.3"/>
+            <stop offset="100%" stop-color="#FFD700" stop-opacity="0"/>
+          </radialGradient>
+        </defs>
+        <circle cx="95" cy="95" r="90" fill="url(#glow)"/>
+        <polygon points="95,12 113,68 172,68 124,102 142,158 95,126 48,158 66,102 18,68 77,68"
+          fill="url(#sg)" stroke="#E6A800" stroke-width="3" stroke-linejoin="round"/>
+        <polygon points="95,28 109,68 95,58 81,68"
+          fill="rgba(255,255,255,0.35)" stroke="none"/>
+        <circle cx="78" cy="80" r="7" fill="rgba(255,255,255,0.5)"/>
+        <circle cx="78" cy="80" r="3" fill="rgba(255,255,255,0.9)"/>
+        <text x="95" y="108" text-anchor="middle"
+          font-family="'Fredoka One',sans-serif" font-size="28" fill="#7B5C00" opacity="0.7">✦</text>
+      </svg>
+    </button>
+
+    <div class="click-hint">+<span id="cpc-label">1</span> ⭐ per click</div>
+
+    <button class="sound-btn" id="sound-btn" onclick="toggleSound()">
+      <span id="sound-icon">✨</span> <span id="sound-label">Sparkle sound</span>
+    </button>
+
+    <button class="prestige-btn" id="prestige-btn" onclick="doPrestige()">✨ Prestige! (×2 forever)</button>
+    <div class="prestige-count" id="prestige-label"></div>
+  </div>
+
+  <div class="right-panel">
+    <div class="panel-title">🏭 Generators</div>
+    <div id="generators-list"></div>
+  </div>
+</div>
+
+<div class="milestone-banner" id="milestone"></div>
+
+<script>
+const UPGRADES = [
+  { id:'u1', name:'Shiny Wand',    icon:'🪄', desc:'+1 click power',        cost:10,    effect:()=>{ S.clickPower+=1; } },
+  { id:'u2', name:'Gold Gloves',   icon:'🧤', desc:'+3 click power',        cost:75,    effect:()=>{ S.clickPower+=3; } },
+  { id:'u3', name:'Lucky Charm',   icon:'🍀', desc:'2× all generators',     cost:200,   effect:()=>{ S.genMult*=2; recalcCPS(); } },
+  { id:'u4', name:'Star Magnet',   icon:'🧲', desc:'+10 click power',       cost:500,   effect:()=>{ S.clickPower+=10; } },
+  { id:'u5', name:'Turbo Engine',  icon:'⚡', desc:'3× all generators',     cost:2000,  effect:()=>{ S.genMult*=3; recalcCPS(); } },
+  { id:'u6', name:'Rainbow Boost', icon:'🌈', desc:'+50 click power',       cost:8000,  effect:()=>{ S.clickPower+=50; } },
+  { id:'u7', name:'Cosmic Dust',   icon:'🌌', desc:'5× all generators',     cost:50000, effect:()=>{ S.genMult*=5; recalcCPS(); } },
+  { id:'u8', name:'Time Warp',     icon:'⏰', desc:'+200 click power',      cost:200000,effect:()=>{ S.clickPower+=200; } },
+];
+
+const GENERATORS = [
+  { id:'g1', name:'Star Fairy',     icon:'🧚', baseCPS:0.1,  baseCost:15 },
+  { id:'g2', name:'Rainbow Frog',   icon:'🐸', baseCPS:0.5,  baseCost:80 },
+  { id:'g3', name:'Cloud Bunny',    icon:'🐰', baseCPS:2,    baseCost:350 },
+  { id:'g4', name:'Candy Dragon',   icon:'🐲', baseCPS:8,    baseCost:1200 },
+  { id:'g5', name:'Moon Panda',     icon:'🐼', baseCPS:25,   baseCost:5000 },
+  { id:'g6', name:'Galaxy Unicorn', icon:'🦄', baseCPS:100,  baseCost:20000 },
+  { id:'g7', name:'Star Factory',   icon:'🏭', baseCPS:400,  baseCost:100000 },
+  { id:'g8', name:'Cosmic Whale',   icon:'🐳', baseCPS:1600, baseCost:500000 },
+];
+
+let S = {
+  stars: 0, totalEarned: 0,
+  clickPower: 1, genMult: 1, cps: 0,
+  prestigeCount: 0, prestigeMult: 1,
+  upgrades: {}, generators: {},
+};
+
+// ── Sound engine (Web Audio API — no files needed) ──
+let audioCtx = null;
+let fartMode = false;
+
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+
+function playSparkle() {
+  try {
+    const ctx = getAudioCtx();
+    const notes = [1047, 1319, 1568, 2093]; // C6 E6 G6 C7
+    const pick = notes[Math.floor(Math.random() * notes.length)];
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(pick, ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(pick * 1.5, ctx.currentTime + 0.12);
+    gain.gain.setValueAtTime(0.18, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.22);
+    osc.start(ctx.currentTime);
+    osc.stop(ctx.currentTime + 0.22);
+  } catch(e) {}
+}
+
+function playFart() {
+  try {
+    const ctx = getAudioCtx();
+    const bufSize = ctx.sampleRate * 0.4;
+    const buf = ctx.createBuffer(1, bufSize, ctx.sampleRate);
+    const data = buf.getChannelData(0);
+    for (let i = 0; i < bufSize; i++) {
+      data[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / bufSize, 1.5);
+    }
+    const src = ctx.createBufferSource();
+    src.buffer = buf;
+    const filter = ctx.createBiquadFilter();
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(280, ctx.currentTime);
+    filter.frequency.exponentialRampToValueAtTime(80, ctx.currentTime + 0.35);
+    const gain = ctx.createGain();
+    gain.gain.setValueAtTime(0.55, ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.38);
+    src.connect(filter);
+    filter.connect(gain);
+    gain.connect(ctx.destination);
+    src.start(ctx.currentTime);
+    src.stop(ctx.currentTime + 0.4);
+  } catch(e) {}
+}
+
+function playClickSound() {
+  if (fartMode) playFart(); else playSparkle();
+}
+
+function toggleSound() {
+  fartMode = !fartMode;
+  const btn = document.getElementById('sound-btn');
+  const icon = document.getElementById('sound-icon');
+  const label = document.getElementById('sound-label');
+  if (fartMode) {
+    btn.classList.add('fart-mode');
+    icon.textContent = '💨';
+    label.textContent = 'Fart sound';
+  } else {
+    btn.classList.remove('fart-mode');
+    icon.textContent = '✨';
+    label.textContent = 'Sparkle sound';
+  }
+  playClickSound();
+}
+
+// ── Helpers ──
+// FIX: always compare integer stars to avoid float precision bugs
+function stars() { return Math.floor(S.stars); }
+
+function fmt(n) {
+  if (n >= 1e12) return (n/1e12).toFixed(2)+'T';
+  if (n >= 1e9)  return (n/1e9).toFixed(2)+'B';
+  if (n >= 1e6)  return (n/1e6).toFixed(2)+'M';
+  if (n >= 1e3)  return (n/1e3).toFixed(1)+'K';
+  return Math.floor(n).toString();
+}
+
+function genCost(gen) {
+  return Math.ceil(gen.baseCost * Math.pow(1.15, S.generators[gen.id] || 0));
+}
+
+function recalcCPS() {
+  S.cps = GENERATORS.reduce((acc, g) => {
+    return acc + (S.generators[g.id]||0) * g.baseCPS * S.genMult * S.prestigeMult;
+  }, 0);
+}
+
+function doClick(e) {
+  const gain = S.clickPower * S.prestigeMult;
+  S.stars += gain;
+  S.totalEarned += gain;
+  playClickSound();
+  spawnFloat(e.clientX, e.clientY, '+' + fmt(gain));
+  updateUI();
+  checkMilestones();
+}
+
+function spawnFloat(x, y, text) {
+  const el = document.createElement('div');
+  el.className = 'float-text';
+  el.textContent = text;
+  el.style.left = (x - 15 + (Math.random()*30-15)) + 'px';
+  el.style.top  = (y - 10) + 'px';
+  document.body.appendChild(el);
+  setTimeout(() => el.remove(), 900);
+}
+
+const MILESTONES = [
+  [100,       '🌟 100 Stars! Great start!'],
+  [1000,      '🎉 1K Stars! Keep it up!'],
+  [10000,     '🚀 10K Stars! On fire!'],
+  [100000,    '💫 100K Stars! Star tycoon!'],
+  [1000000,   '🌌 1M Stars! Legendary!'],
+  [1000000000,'🏆 1 BILLION! Unstoppable!'],
+];
+const shownMilestones = new Set();
+
+function checkMilestones() {
+  MILESTONES.forEach(([n, msg]) => {
+    if (S.totalEarned >= n && !shownMilestones.has(n)) {
+      shownMilestones.add(n);
+      showBanner(msg);
+    }
+  });
+}
+
+function showBanner(msg) {
+  const b = document.getElementById('milestone');
+  b.textContent = msg;
+  b.style.opacity = '1';
+  setTimeout(() => b.style.opacity = '0', 3000);
+}
+
+function buyUpgrade(id) {
+  const upg = UPGRADES.find(u => u.id === id);
+  if (!upg || S.upgrades[id]) return;
+  if (stars() < upg.cost) return;   // FIX: use integer comparison
+  S.stars -= upg.cost;
+  S.upgrades[id] = true;
+  upg.effect();
+  updateUI();
+}
+
+function buyGenerator(id) {
+  const gen = GENERATORS.find(g => g.id === id);
+  if (!gen) return;
+  const cost = genCost(gen);
+  if (stars() < cost) return;       // FIX: use integer comparison
+  S.stars -= cost;
+  S.generators[id] = (S.generators[id] || 0) + 1;
+  recalcCPS();
+  updateUI();
+}
+
+function doPrestige() {
+  if (S.totalEarned < 1000000) return;
+  if (!confirm('Prestige? You lose everything but gain a permanent ×2 multiplier!')) return;
+  S.prestigeCount += 1;
+  S.prestigeMult = Math.pow(2, S.prestigeCount);
+  S.stars = 0; S.totalEarned = 0;
+  S.clickPower = 1; S.genMult = 1; S.cps = 0;
+  S.upgrades = {}; S.generators = {};
+  shownMilestones.clear();
+  showBanner('✨ Prestige ' + S.prestigeCount + '! ×' + S.prestigeMult + ' power forever!');
+  updateUI();
+}
+
+function updateUI() {
+  document.getElementById('score-display').textContent = fmt(S.stars);
+  document.getElementById('cps-display').textContent = fmt(S.cps) + ' per sec';
+  document.getElementById('cpc-label').textContent = fmt(S.clickPower * S.prestigeMult);
+  document.getElementById('passive-ticker').textContent = S.cps > 0
+    ? '🌀 Auto-collecting ' + fmt(S.cps) + ' stars/sec'
+    : 'Click the star to collect!';
+
+  const pb = document.getElementById('prestige-btn');
+  pb.style.display = S.totalEarned >= 1000000 ? 'block' : 'none';
+
+  const pl = document.getElementById('prestige-label');
+  pl.textContent = S.prestigeCount > 0
+    ? '✨ Prestige ×' + S.prestigeCount + ' — ×' + S.prestigeMult + ' power active'
+    : '';
+
+  renderUpgrades();
+  renderGenerators();
+}
+
+function renderUpgrades() {
+  const el = document.getElementById('upgrades-list');
+  el.innerHTML = '';
+  UPGRADES.forEach(upg => {
+    const owned = !!S.upgrades[upg.id];
+    const canAfford = stars() >= upg.cost;  // FIX: integer check
+    const card = document.createElement('div');
+    card.className = 'upgrade-card' + (owned ? ' owned' : (!canAfford ? ' locked' : ''));
+    card.innerHTML =
+      '<div class="upg-top">' +
+        '<span class="upg-icon">' + upg.icon + '</span>' +
+        '<span class="upg-name">' + upg.name + '</span>' +
+        '<span class="upg-cost">' + (owned ? '✓' : fmt(upg.cost)+'⭐') + '</span>' +
+      '</div>' +
+      '<div class="upg-desc">' + upg.desc + '</div>';
+    if (!owned) card.onclick = () => buyUpgrade(upg.id);
+    el.appendChild(card);
+  });
+}
+
+function renderGenerators() {
+  const el = document.getElementById('generators-list');
+  el.innerHTML = '';
+  GENERATORS.forEach(gen => {
+    const owned = S.generators[gen.id] || 0;
+    const cost = genCost(gen);
+    const canAfford = stars() >= cost;  // FIX: integer check
+    const card = document.createElement('div');
+    card.className = 'upgrade-card' + (!canAfford ? ' locked' : '');
+    if (owned) card.style.borderColor = '#5DBB63';
+    const cpsEach = (gen.baseCPS * S.genMult * S.prestigeMult).toFixed(1);
+    card.innerHTML =
+      '<div class="upg-top">' +
+        '<span class="upg-icon">' + gen.icon + '</span>' +
+        '<span class="upg-name">' + gen.name + '</span>' +
+        '<span class="upg-cost">' + fmt(cost) + '⭐</span>' +
+      '</div>' +
+      '<div class="upg-desc">' + cpsEach + '/sec each</div>' +
+      (owned ? '<div class="upg-owned">Owned: ' + owned + '</div>' : '');
+    card.onclick = () => buyGenerator(gen.id);
+    el.appendChild(card);
+  });
+}
+
+// Passive income tick (every 50ms = 20fps)
+setInterval(() => {
+  if (S.cps > 0) {
+    const gain = S.cps / 20;
+    S.stars += gain;
+    S.totalEarned += gain;
+    checkMilestones();
+    updateUI();
+  }
+}, 50);
+
+updateUI();
+</script>
+</body>
+</html>
