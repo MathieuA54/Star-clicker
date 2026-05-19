@@ -4,6 +4,8 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>⭐ Star Clicker — Galaxy Edition</title>
+<!-- Star favicon -->
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cpolygon points='50,5 61,35 95,35 68,57 79,91 50,70 21,91 32,57 5,35 39,35' fill='%23FFD700' stroke='%23E6A800' stroke-width='2'/%3E%3C/svg%3E">
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -307,10 +309,16 @@ body {
   padding: 7px 9px;
   border: 2.5px solid #DDD;
   cursor: pointer;
-  transition: transform .1s, border-color .15s, box-shadow .15s;
+  /* FIX: use box-shadow instead of transform:scale so the card doesn't
+     physically move and cause the hover-shake loop on buttons inside */
+  transition: border-color .15s, box-shadow .15s;
   position: relative;
 }
-.upgrade-card:hover:not(.locked) { transform:scale(1.03); border-color:#FFD700; box-shadow:0 4px 12px rgba(255,215,0,.3); }
+.upgrade-card:hover:not(.locked) {
+  border-color: #FFD700;
+  box-shadow: 0 4px 16px rgba(255,215,0,.4), 0 2px 8px rgba(0,0,0,.1);
+  /* NO transform here — that was the cause of the shake */
+}
 .upgrade-card.locked { opacity:.4; cursor:not-allowed; }
 .upgrade-card.owned  { border-color:#5DBB63; background:rgba(235,255,235,.96); }
 .upgrade-card.can-afford { border-color:#FFD700; background:rgba(255,252,220,.97); }
@@ -362,12 +370,14 @@ body {
   padding:5px 14px;
   font-family:'Fredoka One',sans-serif; font-size:12px;
   cursor:pointer; box-shadow:0 3px 0 #1b5e20;
-  transition:transform .1s;
+  /* FIX: use filter brightness instead of scale so the button doesn't
+     move and trigger the parent card's hover to flicker */
+  transition: filter .1s, box-shadow .1s;
   display:block;
   width:100%;
 }
-.quest-claim:hover { transform:scale(1.04); }
-.quest-claim:active { transform:scale(.97); box-shadow:0 1px 0 #1b5e20; }
+.quest-claim:hover { filter: brightness(1.1); }
+.quest-claim:active { filter: brightness(0.95); box-shadow:0 1px 0 #1b5e20; }
 
 /* ─── STATS PANEL ─── */
 .stat-block {
@@ -387,9 +397,14 @@ body {
   padding:8px 10px;
   border:2.5px solid #DDD;
   cursor:pointer;
-  transition:transform .1s, border-color .15s;
+  /* FIX: same fix — box-shadow only, no transform:scale */
+  transition: border-color .15s, box-shadow .15s;
 }
-.prestige-shop-card:hover { transform:scale(1.03); border-color:#a855f7; }
+.prestige-shop-card:hover {
+  border-color: #a855f7;
+  box-shadow: 0 4px 16px rgba(168,85,247,.35), 0 2px 8px rgba(0,0,0,.1);
+  /* NO transform here */
+}
 .prestige-shop-card.owned-ps { border-color:#5DBB63; opacity:.6; cursor:not-allowed; }
 .ps-top { display:flex; align-items:center; gap:6px; }
 .ps-icon { font-size:22px; }
@@ -412,10 +427,10 @@ body {
   border:none; border-radius:12px; color:white;
   padding:7px 18px; font-family:'Fredoka One',sans-serif; font-size:13px;
   cursor:pointer; box-shadow:0 3px 0 #c05000; width:100%;
-  transition:transform .1s;
+  transition: filter .1s;
 }
-.lottery-btn:hover { transform:scale(1.04); }
-.lottery-btn:disabled { opacity:.5; cursor:not-allowed; transform:none; }
+.lottery-btn:hover { filter: brightness(1.08); }
+.lottery-btn:disabled { opacity:.5; cursor:not-allowed; filter:none; }
 
 /* ─── PRESTIGE BUTTON ─── */
 .prestige-btn {
@@ -423,11 +438,11 @@ body {
   border:none; border-radius:22px; color:white;
   padding:10px 22px; font-family:'Fredoka One',sans-serif; font-size:14px;
   cursor:pointer; box-shadow:0 4px 0 #5b21b6;
-  display:none; transition:transform .1s;
+  display:none; transition:filter .1s, box-shadow .1s;
   text-shadow:1px 1px 0 rgba(0,0,0,.2);
 }
-.prestige-btn:hover { transform:scale(1.06); }
-.prestige-btn:active { transform:scale(.96); box-shadow:0 2px 0 #5b21b6; }
+.prestige-btn:hover { filter: brightness(1.1); }
+.prestige-btn:active { filter: brightness(0.95); box-shadow:0 2px 0 #5b21b6; }
 
 /* ─── BANNERS / TOASTS ─── */
 .milestone-banner {
@@ -473,10 +488,10 @@ body {
 .sound-btn {
   background:rgba(255,255,255,.88); border:2.5px solid #DDD; border-radius:18px;
   padding:5px 13px; font-family:'Fredoka One',sans-serif; font-size:11px;
-  cursor:pointer; color:#555; transition:transform .1s, border-color .15s;
+  cursor:pointer; color:#555; transition:filter .1s, border-color .15s;
   display:flex; align-items:center; gap:4px;
 }
-.sound-btn:hover { border-color:#FFD700; transform:scale(1.05); }
+.sound-btn:hover { border-color:#FFD700; filter: brightness(1.05); }
 .sound-btn.fart-mode { border-color:#8BC34A; background:rgba(220,255,200,.9); color:#4a7c00; }
 
 /* ─── PASSIVE TICKER ─── */
@@ -1043,7 +1058,6 @@ function buyGenerator(id){
   if(!gen) return;
   let qty=buyMode;
   if(buyMode==='max'){
-    // calc max we can afford
     let tempStars=Math.floor(S.stars),count=S.generators[id]||0,bought=0;
     while(true){
       const c=genCost(gen,count);
@@ -1148,7 +1162,6 @@ function claimQuest(idx){
       const pick=avail[Math.floor(Math.random()*avail.length)];
       S.activeQuests[idx]={...pick,claimed:false};
     } else {
-      // recycle
       const pick=QUESTS_POOL[Math.floor(Math.random()*QUESTS_POOL.length)];
       S.activeQuests[idx]={...pick,claimed:false};
     }
@@ -1275,7 +1288,6 @@ function scheduleEvent(){
 scheduleEvent();
 
 // ─── WORLD SCENE ───
-// Each generator adds visual elements to the background
 const SCENE_CONFIGS={
   fairy:    { emoji:'🧚', positions:[[12,65],[88,72]], theme:null },
   frog:     { emoji:'🐸', positions:[[8,78],[92,75]], theme:null },
@@ -1293,7 +1305,6 @@ const SCENE_CONFIGS={
 };
 
 function updateWorldScene(){
-  // Update theme based on highest generator owned
   let theme=null;
   GENERATORS.forEach(gen=>{
     if((S.generators[gen.id]||0)>0){
@@ -1301,24 +1312,18 @@ function updateWorldScene(){
       if(cfg&&cfg.theme) theme=cfg.theme;
     }
   });
-  // Only override prestige theme if no prestige applied
   if(S.prestigeCount===0&&theme){
     document.body.className='';
     document.body.classList.add(theme);
   }
-
-  // Update sky particles
   updateSkyParticles();
-  // Update ground decorations
   updateDecorations();
-  // Update buildings
   updateBuildings();
 }
 
 function updateSkyParticles(){
   const sl=document.getElementById('scene-layer');
   sl.innerHTML='';
-  // Clouds always present
   const cloudData=[
     {w:140,h:40,top:8,spd:32,delay:5},
     {w:100,h:30,top:20,spd:42,delay:18},
@@ -1335,7 +1340,6 @@ function updateSkyParticles(){
       sl.appendChild(div);
     });
   } else {
-    // Stars in night mode
     for(let i=0;i<40;i++){
       const s=document.createElement('div');
       s.className='star-particle';
@@ -1344,7 +1348,6 @@ function updateSkyParticles(){
       sl.appendChild(s);
     }
   }
-  // Whale-sky swimmable emojis
   if((S.generators['g8']||0)>0){
     for(let i=0;i<Math.min(3,(S.generators['g8']||0));i++){
       const w=document.createElement('div');
@@ -1393,19 +1396,11 @@ function updateBuildings(){
   const buildings=[];
   if(hasFact){
     const n=Math.min(S.generators['g7']||0,5);
-    for(let i=0;i<n;i++){
-      buildings.push({emoji:'🏭',size:40+i*4});
-    }
+    for(let i=0;i<n;i++) buildings.push({emoji:'🏭',size:40+i*4});
   }
-  if(hasPulsar){
-    buildings.push({emoji:'📡',size:48});
-  }
-  if(hasWorm){
-    buildings.push({emoji:'🌀',size:56});
-  }
-  if(hasGod){
-    buildings.push({emoji:'👑',size:64});
-  }
+  if(hasPulsar) buildings.push({emoji:'📡',size:48});
+  if(hasWorm)   buildings.push({emoji:'🌀',size:56});
+  if(hasGod)    buildings.push({emoji:'👑',size:64});
   buildings.forEach(b=>{
     const el=document.createElement('div');
     el.style.cssText=`font-size:${b.size}px;line-height:1;opacity:.9;filter:drop-shadow(0 4px 8px rgba(0,0,0,.3));`;
@@ -1497,7 +1492,7 @@ function patchAchievements(){
   });
 }
 
-// ─── QUEST PATCH (BUG FIXED) ───
+// ─── QUEST PATCH ───
 function patchQuests(){
   const c=document.getElementById('quests-list');
   if(!c) return;
@@ -1518,7 +1513,6 @@ function patchQuests(){
       ${claimable?`<button class="quest-claim" id="qclaim-${idx}">🎁 Claim Reward!</button>`:''}
       ${quest.claimed?`<div style="font-size:10px;color:#5DBB63;margin-top:4px;font-family:'Nunito',sans-serif;">✓ Claimed</div>`:''}
     `;
-    // Attach claim button AFTER inserting into DOM
     c.appendChild(div);
     if(claimable){
       const btn=div.querySelector(`#qclaim-${idx}`);
@@ -1616,11 +1610,9 @@ updateUI();
 checkAchievements();
 updateWorldScene();
 
-// Restore milestone set silently
 for(const[n] of MILESTONES) if(S.totalEarned>=n) shownMilestones.add(n);
 for(const ach of ACHIEVEMENTS) if(S.upgrades['ach_'+ach.id]) shownAchievements.add(ach.id);
 
-// Refresh scene every 30s for any dynamic changes
 setInterval(updateWorldScene, 30000);
 </script>
 </body>
